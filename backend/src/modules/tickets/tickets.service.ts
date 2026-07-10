@@ -161,14 +161,20 @@ export async function createTicket(
   });
 }
 
-/** Row-level authorization: admins can touch any ticket; agents only their own or unassigned. */
 export function assertCanModify(
   actor: { id: string; role: string },
   ticket: { assigneeId: string | null },
 ) {
-  if (actor.role === 'ADMIN') return;
-  if (ticket.assigneeId && ticket.assigneeId !== actor.id) {
-    throw ApiError.forbidden('Only the assigned agent or an admin can modify this ticket');
+  // Admin can modify anything.
+  if (actor.role === 'ADMIN') {
+    return;
+  }
+
+  // Agents can only modify tickets assigned to themselves.
+  if (ticket.assigneeId !== actor.id) {
+    throw ApiError.forbidden(
+      'Only the assigned agent or an admin can modify this ticket',
+    );
   }
 }
 

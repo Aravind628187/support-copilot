@@ -119,23 +119,46 @@ export async function getTicket(id: string) {
   if (!ticket) throw ApiError.notFound('Ticket not found');
   return ticket;
 }
+export async function createTicket(
+  actor: { id: string },
+  data: {
+    subject: string;
+    description: string;
+    customerId: string;
+    priority: TicketPriority;
+    assigneeId?: string;
+  },
+) {
+  const customer = await prisma.customer.findUnique({
+    where: {
+      id: data.customerId,
+    },
+  });
 
-export async function createTicket(data: {
-  subject: string;
-  description: string;
-  customerId: string;
-  priority: TicketPriority;
-  assigneeId?: string;
-}) {
-  const customer = await prisma.customer.findUnique({ where: { id: data.customerId } });
-  if (!customer) throw ApiError.badRequest('Selected customer does not exist');
-
-  if (data.assigneeId) {
-    const assignee = await prisma.user.findUnique({ where: { id: data.assigneeId } });
-    if (!assignee) throw ApiError.badRequest('Selected assignee does not exist');
+  if (!customer) {
+    throw ApiError.badRequest('Selected customer does not exist');
   }
 
-  return prisma.ticket.create({ data, include: ticketInclude });
+  if (data.assigneeId) {
+    const assignee = await prisma.user.findUnique({
+      where: {
+        id: data.assigneeId,
+      },
+    });
+
+    if (!assignee) {
+      throw ApiError.badRequest('Selected assignee does not exist');
+    }
+  }
+
+  return prisma.ticket.create({
+    data: {
+      ...data,
+      // If no assignee is provided, assign the ticket to the creator.
+      assigneeId: data.assigneeId ?? actor.id,
+    },
+    include: ticketInclude,
+  });
 }
 
 /** Row-level authorization: admins can touch any ticket; agents only their own or unassigned. */

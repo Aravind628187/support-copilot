@@ -103,7 +103,7 @@ router.post(
   generalWriteLimiter,
   validate({ body: createTicketSchema }),
   asyncHandler(async (req, res) => {
-    const ticket = await service.createTicket(req.body);
+    const ticket = await service.createTicket(req.user!, req.body);
 
     await recordAudit({
       actorId: req.user!.id,

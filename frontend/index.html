@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://your-app.example.com/" />
+
+    <title>SupportCopilot — Helpdesk with AI-drafted replies</title>
+    <meta
+      name="description"
+      content="SupportCopilot is a helpdesk for small teams: ticket triage, a knowledge base, and Claude-drafted reply suggestions an agent always reviews before sending."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SupportCopilot" />
+    <meta property="og:title" content="SupportCopilot — Helpdesk with AI-drafted replies" />
+    <meta
+      property="og:description"
+      content="Ticket triage, a knowledge base, and Claude-drafted reply suggestions an agent always reviews before sending."
+    />
+    <meta property="og:url" content="https://your-app.example.com/" />
+    <meta property="og:image" content="https://your-app.example.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SupportCopilot dashboard preview" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SupportCopilot — Helpdesk with AI-drafted replies" />
+    <meta
+      name="twitter:description"
+      content="Ticket triage, a knowledge base, and Claude-drafted reply suggestions an agent always reviews before sending."
+    />
+    <meta name="twitter:image" content="https://your-app.example.com/og-image.png" />
+
+    <!--
+      SEO note: this is a client-rendered SPA, so crawlers that don't execute
+      JS only see these static tags, not react-helmet-async's per-route
+      overrides. docs/architecture.md documents this trade-off and the
+      SSR/prerendering upgrade path (Next.js or vite-plugin-ssr).
+    -->
+    <script>
+      // Runs before paint so dark mode never flashes light-then-dark on load.
+      (function () {
+        try {
+          var stored = window.localStorage.getItem('support-copilot:theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          /* localStorage unavailable — fall back to light, no-op */
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-ink-50 text-ink-950 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

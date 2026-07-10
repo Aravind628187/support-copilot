@@ -1,0 +1,178 @@
+// SupportCopilot — Prisma schema
+// Postgres is the only supported provider. See docs/architecture.md for the
+// reasoning behind every relation and the trade-offs we accepted.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  AGENT
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MessageAuthorType {
+  CUSTOMER
+  AGENT
+  AI_DRAFT
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  passwordHash    String
+  role            Role      @default(AGENT)
+  isEmailVerified Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  assignedTickets     Ticket[]                 @relation("AssignedTickets")
+  messages            TicketMessage[]
+  kbArticles          KnowledgeBaseArticle[]
+  auditLogs           AuditLog[]
+  refreshTokens       RefreshToken[]
+  passwordResets      PasswordResetToken[]
+  emailVerifications  EmailVerificationToken[]
+
+  @@index([email])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  company   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets Ticket[]
+
+  @@index([email])
+}
+
+model Ticket {
+  id          String         @id @default(cuid())
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  assigneeId String?
+  assignee   User?   @relation("AssignedTickets", fields: [assigneeId], references: [id])
+
+  messages TicketMessage[]
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+  deletedAt  DateTime?
+
+  @@index([status])
+  @@index([priority])
+  @@index([assigneeId])
+  @@index([customerId])
+  @@index([createdAt])
+}
+
+model TicketMessage {
+  id         String            @id @default(cuid())
+  ticketId   String
+  ticket     Ticket            @relation(fields: [ticketId], references: [id])
+  authorType MessageAuthorType
+  authorId   String?
+  author     User?             @relation(fields: [authorId], references: [id])
+  body       String
+  isAiDraft  Boolean           @default(false)
+  createdAt  DateTime          @default(now())
+
+  @@index([ticketId, createdAt])
+}
+
+model KnowledgeBaseArticle {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  tags      String[]
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([authorId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}

@@ -1,0 +1,45 @@
+import * as React from 'react';
+import { cn } from '../../lib/utils';
+
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, label, error, id, ...props }, ref) => {
+    return (
+      <div className="flex flex-col gap-1">
+        {label && (
+          <label
+            htmlFor={id}
+            className="text-sm font-medium text-ink-700 dark:text-ink-300"
+          >
+            {label}
+          </label>
+        )}
+
+        <textarea
+          id={id}
+          ref={ref}
+          className={cn(
+            'min-h-[100px] w-full rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm text-ink-950 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100',
+            error &&
+              'border-danger-500 focus:ring-danger-500 dark:border-danger-500',
+            className
+          )}
+          {...props}
+        />
+
+        {error && (
+          <p className="text-sm text-danger-500">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+);
+
+Textarea.displayName = 'Textarea';

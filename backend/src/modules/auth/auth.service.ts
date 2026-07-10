@@ -31,9 +31,6 @@ function publicUser(user: { id: string; name: string; email: string; role: strin
 export async function signup(input: SignupInput) {
   const existing = await prisma.user.findUnique({ where: { email: input.email } });
   if (existing) {
-    // Same message whether the email exists or not would leak less, but for
-    // a portfolio project we favor a clear, actionable message over that
-    // last increment of enumeration-resistance — noted as a trade-off.
     throw ApiError.conflict('An account with that email already exists');
   }
 
@@ -86,50 +83,72 @@ export async function login(input: LoginInput) {
   return { user: publicUser(user), accessToken, refreshToken };
 }
 
-/**
- * Refresh token rotation: every refresh revokes the token that was
- * presented and issues a brand new one. If a revoked token is ever replayed
- * (a strong signal of theft), every outstanding session for that user is
- * killed rather than silently trusting it.
- */
 export async function rotateRefreshToken(presentedToken: string) {
-  let decoded: { sub: string };
   try {
-    decoded = verifyRefreshToken(presentedToken);
+    verifyRefreshToken(presentedToken);
   } catch {
     throw ApiError.unauthorized('Session expired — please log in again');
   }
 
   const tokenHash = hashToken(presentedToken);
-  const stored = await prisma.refreshToken.findUnique({ where: { tokenHash } });
+  const stored = await prisma.refreshToken.findUnique({
+    where: { tokenHash },
+  });
 
   if (!stored || stored.expiresAt < new Date()) {
     throw ApiError.unauthorized('Session expired — please log in again');
   }
 
   if (stored.revokedAt) {
-    // Reuse of an already-rotated token — assume compromise, kill everything.
     await prisma.refreshToken.updateMany({
-      where: { userId: stored.userId, revokedAt: null },
-      data: { revokedAt: new Date() },
+      where: {
+        userId: stored.userId,
+        revokedAt: null,
+      },
+      data: {
+        revokedAt: new Date(),
+      },
     });
+
     throw ApiError.unauthorized('Session invalidated — please log in again');
   }
 
-  const user = await prisma.user.findUnique({ where: { id: stored.userId } });
-  if (!user || user.deletedAt) throw ApiError.unauthorized();
-
-  await prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: new Date() } });
-
-  const accessToken = signAccessToken({ sub: user.id, role: user.role });
-  const refreshToken = signRefreshToken(user.id);
-  await prisma.refreshToken.create({
-    data: { userId: user.id, tokenHash: hashToken(refreshToken), expiresAt: refreshTokenExpiry() },
+  const user = await prisma.user.findUnique({
+    where: { id: stored.userId },
   });
 
-  return { user: publicUser(user), accessToken, refreshToken };
-}
+  if (!user || user.deletedAt) {
+    throw ApiError.unauthorized();
+  }
 
+  await prisma.refreshToken.update({
+    where: { id: stored.id },
+    data: {
+      revokedAt: new Date(),
+    },
+  });
+
+  const accessToken = signAccessToken({
+    sub: user.id,
+    role: user.role,
+  });
+
+  const refreshToken = signRefreshToken(user.id);
+
+  await prisma.refreshToken.create({
+    data: {
+      userId: user.id,
+      tokenHash: hashToken(refreshToken),
+      expiresAt: refreshTokenExpiry(),
+    },
+  });
+
+  return {
+    user: publicUser(user),
+    accessToken,
+    refreshToken,
+  };
+}
 export async function logout(presentedToken: string | undefined) {
   if (!presentedToken) return;
   const tokenHash = hashToken(presentedToken);

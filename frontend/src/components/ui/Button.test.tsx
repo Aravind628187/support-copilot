@@ -1,30 +1,51 @@
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, expect, it, vi, afterEach } from 'vitest';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 import { Button } from './Button';
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('Button', () => {
   it('renders its label and responds to a click (happy path)', () => {
     const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Save</Button>);
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    expect(handleClick).toHaveBeenCalledOnce();
+
+    const { getByRole } = render(
+      <Button onClick={handleClick}>
+        Save
+      </Button>
+    );
+
+    fireEvent.click(getByRole('button', { name: 'Save' }));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('is disabled and unclickable while isLoading is true (failure mode: double-submit)', () => {
     const handleClick = vi.fn();
-    render(
+
+    const { getByRole } = render(
       <Button onClick={handleClick} isLoading>
         Save
-      </Button>,
+      </Button>
     );
-    const button = screen.getByRole('button', { name: 'Save' });
+
+    const button = getByRole('button', { name: 'Save' });
+
     expect(button).toBeDisabled();
+
     fireEvent.click(button);
+
     expect(handleClick).not.toHaveBeenCalled();
   });
 
   it('respects an explicit disabled prop (boundary case)', () => {
-    render(<Button disabled>Save</Button>);
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    const { getByRole } = render(
+      <Button disabled>
+        Save
+      </Button>
+    );
+
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 });

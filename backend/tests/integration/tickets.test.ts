@@ -7,13 +7,19 @@ import { hashPassword } from '../../src/utils/password';
 const app = createApp();
 
 const suffix = Date.now();
+
 const ownerEmail = `owner-${suffix}@example.test`;
 const otherEmail = `other-${suffix}@example.test`;
 const customerEmail = `customer-${suffix}@example.test`;
+
 const password = 'Sup3rSecret!Pass';
 
 let ownerAgent: ReturnType<typeof request.agent>;
 let otherAgent: ReturnType<typeof request.agent>;
+
+let ownerId: string;
+let otherId: string;
+
 let customerId: string;
 let ticketId: string;
 
@@ -31,7 +37,9 @@ describe('tickets', () => {
       },
     });
 
-    await prisma.user.create({
+    ownerId = owner.id;
+
+    const other = await prisma.user.create({
       data: {
         name: 'Other Agent',
         email: otherEmail,
@@ -40,6 +48,8 @@ describe('tickets', () => {
         isEmailVerified: true,
       },
     });
+
+    otherId = other.id;
 
     const customer = await prisma.customer.create({
       data: {
@@ -53,80 +63,75 @@ describe('tickets', () => {
     ownerAgent = request.agent(app);
     otherAgent = request.agent(app);
 
-    await ownerAgent
-      .post('/api/auth/login')
-      .send({ email: ownerEmail, password });
+    const ownerLogin = await ownerAgent.post('/api/auth/login').send({
+      email: ownerEmail,
+      password,
+    });
 
-    await otherAgent
-      .post('/api/auth/login')
-      .send({ email: otherEmail, password });
+    expect(ownerLogin.status).toBe(200);
 
-    void owner;
+    const otherLogin = await otherAgent.post('/api/auth/login').send({
+      email: otherEmail,
+      password,
+    });
+
+    expect(otherLogin.status).toBe(200);
   });
 
   afterAll(async () => {
     await prisma.ticket.deleteMany({
-      where: { customerId },
+      where: {
+        customerId,
+      },
     });
 
     await prisma.customer.deleteMany({
-      where: { email: customerEmail },
-    });
-
-    const users = await prisma.user.findMany({
       where: {
-        email: {
-          in: [ownerEmail, otherEmail],
-        },
-      },
-      select: {
-        id: true,
+        id: customerId,
       },
     });
 
-    const ids = users.map((u) => u.id);
+    const ids = [ownerId, otherId];
 
-    if (ids.length > 0) {
-      await prisma.refreshToken.deleteMany({
-        where: {
-          userId: {
-            in: ids,
-          },
+    await prisma.refreshToken.deleteMany({
+      where: {
+        userId: {
+          in: ids,
         },
-      });
+      },
+    });
 
-      await prisma.passwordResetToken.deleteMany({
-        where: {
-          userId: {
-            in: ids,
-          },
+    await prisma.passwordResetToken.deleteMany({
+      where: {
+        userId: {
+          in: ids,
         },
-      });
+      },
+    });
 
-      await prisma.emailVerificationToken.deleteMany({
-        where: {
-          userId: {
-            in: ids,
-          },
+    await prisma.emailVerificationToken.deleteMany({
+      where: {
+        userId: {
+          in: ids,
         },
-      });
+      },
+    });
 
-      await prisma.auditLog.deleteMany({
-        where: {
-          actorId: {
-            in: ids,
-          },
+    await prisma.auditLog.deleteMany({
+      where: {
+        actorId: {
+          in: ids,
         },
-      });
+      },
+    });
 
-      await prisma.user.deleteMany({
-        where: {
-          id: {
-            in: ids,
-          },
+    await prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
         },
-      });
-    }
+      },
+    });
 
     await prisma.$disconnect();
   });
@@ -140,7 +145,10 @@ describe('tickets', () => {
     });
 
     expect(res.status).toBe(201);
+
     expect(res.body.subject).toBe('Cannot access my dashboard');
+
+    expect(res.body.assignee.id).toBe(ownerId);
 
     ticketId = res.body.id;
   });
@@ -157,34 +165,31 @@ describe('tickets', () => {
   });
 
   it('finds the ticket via search on subject text', async () => {
-    const res = await ownerAgent
-      .get('/api/tickets')
-      .query({ search: 'dashboard' });
+    const res = await ownerAgent.get('/api/tickets').query({
+      search: 'dashboard',
+    });
 
     expect(res.status).toBe(200);
+
     expect(
       res.body.items.some((t: { id: string }) => t.id === ticketId),
     ).toBe(true);
   });
 
   it('filters tickets by status with no matches for an unused status', async () => {
-    const res = await ownerAgent
-      .get('/api/tickets')
-      .query({
-        status: 'CLOSED',
-        search: 'dashboard',
-      });
+    const res = await ownerAgent.get('/api/tickets').query({
+      status: 'CLOSED',
+      search: 'dashboard',
+    });
 
     expect(res.status).toBe(200);
     expect(res.body.items).toHaveLength(0);
   });
 
   it("lets the owning agent update their own ticket's status", async () => {
-    const res = await ownerAgent
-      .patch(`/api/tickets/${ticketId}`)
-      .send({
-        status: 'RESOLVED',
-      });
+    const res = await ownerAgent.patch(`/api/tickets/${ticketId}`).send({
+      status: 'RESOLVED',
+    });
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('RESOLVED');
@@ -192,11 +197,9 @@ describe('tickets', () => {
   });
 
   it("blocks a different agent from updating someone else's assigned ticket (row-level auth, failure mode)", async () => {
-    const res = await otherAgent
-      .patch(`/api/tickets/${ticketId}`)
-      .send({
-        status: 'CLOSED',
-      });
+    const res = await otherAgent.patch(`/api/tickets/${ticketId}`).send({
+      status: 'CLOSED',
+    });
 
     expect(res.status).toBe(403);
   });

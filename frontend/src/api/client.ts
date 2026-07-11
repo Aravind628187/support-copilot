@@ -1,31 +1,50 @@
 import axios, { AxiosError } from 'axios';
 import type { ApiErrorShape } from '../types';
 
+// Backend API URL
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://support-copilot-m0k5.onrender.com/api';
+
 export const api = axios.create({
-  baseURL: '/api',
-  withCredentials: true, // send/receive the httpOnly auth cookies
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: API_BASE_URL,
+  withCredentials: true, // send/receive httpOnly cookies
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 let refreshPromise: Promise<void> | null = null;
 
 /**
- * On a 401, try exactly once to refresh the access token via the httpOnly
- * refresh cookie, then replay the original request. Concurrent 401s share a
- * single in-flight refresh call instead of each firing their own.
+ * Automatically refresh access token once on 401 responses
+ * and retry the original request.
  */
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const original = error.config as (typeof error.config & { _retried?: boolean }) | undefined;
+    const original = error.config as
+      | (typeof error.config & { _retried?: boolean })
+      | undefined;
+
     const status = error.response?.status;
 
-    if (status === 401 && original && !original._retried && !original.url?.includes('/auth/')) {
+    if (
+      status === 401 &&
+      original &&
+      !original._retried &&
+      !original.url?.includes('/auth/')
+    ) {
       original._retried = true;
+
       try {
-        refreshPromise ??= api.post('/auth/refresh').then(() => undefined);
+        refreshPromise ??= api
+          .post('/auth/refresh')
+          .then(() => undefined);
+
         await refreshPromise;
         refreshPromise = null;
+
         return api(original);
       } catch {
         refreshPromise = null;
@@ -34,13 +53,23 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
-export function extractErrorMessage(error: unknown, fallback = 'Something went wrong'): string {
+/**
+ * Extract readable API error message.
+ */
+export function extractErrorMessage(
+  error: unknown,
+  fallback = 'Something went wrong'
+): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as ApiErrorShape | undefined;
-    if (data?.error?.message) return data.error.message;
+
+    if (data?.error?.message) {
+      return data.error.message;
+    }
   }
+
   return fallback;
 }

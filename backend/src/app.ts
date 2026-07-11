@@ -40,6 +40,13 @@ export function createApp() {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
   });
+  app.get("/", (req, res) => {
+   res.status(200).json({
+    success: true,
+    message: "Support Copilot Backend is running 🚀",
+    version: "1.0.0"
+   });
+  });
 
   app.use('/api/auth', authRoutes);
   app.use('/api/tickets/:ticketId/messages', messageRoutes);

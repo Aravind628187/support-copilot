@@ -6,6 +6,20 @@ function generateSecret() {
   return crypto.randomBytes(32).toString('hex');
 }
 
+function resolveDatabaseUrl(rawEnv: NodeJS.ProcessEnv = process.env) {
+  const candidates = [
+    rawEnv.DATABASE_URL,
+    rawEnv.POSTGRES_URL,
+    rawEnv.POSTGRES_PRISMA_URL,
+    rawEnv.DATABASE_URL_NON_POOLING,
+    rawEnv.DATABASE_URL_UNPOOLED,
+    rawEnv.DB_URL,
+    rawEnv.POSTGRESQL_URL,
+  ];
+
+  return candidates.find((value) => !!value?.trim())?.trim();
+}
+
 // Validate environment variables before the server starts.
 const envSchema = z.object({
   NODE_ENV: z
@@ -43,8 +57,11 @@ const envSchema = z.object({
 });
 
 export function parseEnv(rawEnv: NodeJS.ProcessEnv = process.env) {
+  const databaseUrl = resolveDatabaseUrl(rawEnv);
+
   const normalizedEnv = {
     ...rawEnv,
+    DATABASE_URL: databaseUrl || rawEnv.DATABASE_URL?.trim() || undefined,
     JWT_ACCESS_SECRET: rawEnv.JWT_ACCESS_SECRET?.trim() || undefined,
     JWT_REFRESH_SECRET: rawEnv.JWT_REFRESH_SECRET?.trim() || undefined,
   };

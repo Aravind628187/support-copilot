@@ -49,4 +49,4 @@ COPY package*.json ./
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/index.js"]
+CMD ["node", "scripts/start-with-env.js"]

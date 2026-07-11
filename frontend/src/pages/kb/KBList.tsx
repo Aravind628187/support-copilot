@@ -24,11 +24,7 @@ import {
   articleFormSchema,
   ArticleFormValues,
 } from '../../lib/validation';
-
-// If your project doesn't have a central useAuth hook at ../../hooks/useAuth,
-// provide a lightweight local fallback to avoid module-not-found errors.
-// Replace or remove this fallback if you have a proper implementation elsewhere.
-const useAuth = () => ({ user: undefined as { role?: string } | undefined });
+import { useAuth } from '../../context/AuthContext';
 
 export function KBListPage() {
   const navigate = useNavigate();
@@ -188,7 +184,7 @@ export function KBListPage() {
                     .map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-pill bg-ink-100 px-2 py-0.5 text-xs"
+                        className="rounded-full bg-indigo-600 px-2 py-1 text-xs text-white"
                       >
                         {tag}
                       </span>

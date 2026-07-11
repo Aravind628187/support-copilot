@@ -15,6 +15,7 @@ import { useToast } from '../../components/ui/Toast';
 import { extractErrorMessage } from '../../api/client';
 import { formatDateTime } from '../../lib/utils';
 import { articleFormSchema, ArticleFormValues } from '../../lib/validation';
+import { useAuth } from '../../context/AuthContext';
 
 export function KBArticlePage() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +23,9 @@ export function KBArticlePage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const [editing, setEditing] = useState(false);
+
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   const {
     data: article,
@@ -45,7 +49,10 @@ export function KBArticlePage() {
   }, [article, reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (values: ArticleFormValues) => updateArticle(id!, values),
+    mutationFn: (values: ArticleFormValues) => {
+      if (!isAdmin) throw new Error('Unauthorized');
+      return updateArticle(id!, values);
+    },
     onSuccess: () => {
       showToast({ variant: 'success', message: 'Article updated' });
       setEditing(false);
@@ -56,7 +63,10 @@ export function KBArticlePage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => deleteArticle(id!),
+    mutationFn: () => {
+      if (!isAdmin) throw new Error('Unauthorized');
+      return deleteArticle(id!);
+    },
     onSuccess: () => {
       showToast({ variant: 'success', message: 'Article deleted' });
       navigate('/kb');
@@ -98,44 +108,47 @@ export function KBArticlePage() {
               {article.author && ` · by ${article.author.name}`}
             </p>
           </div>
-          <div className="flex gap-2">
-            {editing ? (
-              <>
-                <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>
-                  <X className="h-4 w-4" />
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  isLoading={isSubmitting || updateMutation.isPending}
-                  onClick={handleSubmit((values) => updateMutation.mutate(values))}
-                >
-                  <Save className="h-4 w-4" />
-                  Save
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
-                  <Pencil className="h-4 w-4" />
-                  Edit
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  isLoading={deleteMutation.isPending}
-                  onClick={() => {
-                    if (confirm('Delete this article? This cannot be undone.')) deleteMutation.mutate();
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
+
+          {isAdmin && (
+            <div className="flex gap-2">
+              {editing ? (
+                <>
+                  <Button variant="secondary" size="sm" onClick={() => setEditing(false)}>
+                    <X className="h-4 w-4" />
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    isLoading={isSubmitting || updateMutation.isPending}
+                    onClick={handleSubmit((values) => updateMutation.mutate(values))}
+                  >
+                    <Save className="h-4 w-4" />
+                    Save
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
+                    <Pencil className="h-4 w-4" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    isLoading={deleteMutation.isPending}
+                    onClick={() => {
+                      if (confirm('Delete this article? This cannot be undone.')) deleteMutation.mutate();
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
         </CardHeader>
         <CardBody>
-          {editing ? (
+          {editing && isAdmin ? (
             <div className="flex flex-col gap-4">
               <Textarea
                 id="content"

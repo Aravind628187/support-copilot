@@ -16,10 +16,7 @@ export const api = axios.create({
 
 let refreshPromise: Promise<void> | null = null;
 
-/**
- * Automatically refresh access token once on 401 responses
- * and retry the original request.
- */
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {

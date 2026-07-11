@@ -1,20 +1,16 @@
 import { Response } from 'express';
-import { env, isProduction } from '../config/env';
+import { env } from '../config/env';
 
 const baseCookieOptions = {
   httpOnly: true,
-
-  // HTTPS only in production
-  secure: isProduction,
-
-  // Required when frontend and backend are on different domains
-  sameSite: isProduction ? ('none' as const) : ('lax' as const),
+  secure: true,
+  sameSite: 'none' as const,
 };
 
 export function setAuthCookies(
   res: Response,
   accessToken: string,
-  refreshToken: string,
+  refreshToken: string
 ) {
   res.cookie('accessToken', accessToken, {
     ...baseCookieOptions,
@@ -25,7 +21,7 @@ export function setAuthCookies(
   res.cookie('refreshToken', refreshToken, {
     ...baseCookieOptions,
     maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
-    path: '/api/auth',
+    path: '/',
   });
 }
 
@@ -37,6 +33,6 @@ export function clearAuthCookies(res: Response) {
 
   res.clearCookie('refreshToken', {
     ...baseCookieOptions,
-    path: '/api/auth',
+    path: '/',
   });
 }

@@ -1,5 +1,10 @@
+import crypto from 'node:crypto';
 import 'dotenv/config';
 import { z } from 'zod';
+
+function generateSecret() {
+  return crypto.randomBytes(32).toString('hex');
+}
 
 // Validate environment variables before the server starts.
 const envSchema = z.object({
@@ -15,11 +20,13 @@ const envSchema = z.object({
 
   JWT_ACCESS_SECRET: z
     .string()
-    .min(16, 'JWT_ACCESS_SECRET must be at least 16 characters'),
+    .min(16, 'JWT_ACCESS_SECRET must be at least 16 characters')
+    .default(() => generateSecret()),
 
   JWT_REFRESH_SECRET: z
     .string()
-    .min(16, 'JWT_REFRESH_SECRET must be at least 16 characters'),
+    .min(16, 'JWT_REFRESH_SECRET must be at least 16 characters')
+    .default(() => generateSecret()),
 
   ACCESS_TOKEN_TTL_MIN: z.coerce.number().int().positive().default(15),
 
@@ -35,7 +42,17 @@ const envSchema = z.object({
   LOGIN_RATE_LIMIT_WINDOW_MIN: z.coerce.number().int().positive().default(15),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export function parseEnv(rawEnv: NodeJS.ProcessEnv = process.env) {
+  const normalizedEnv = {
+    ...rawEnv,
+    JWT_ACCESS_SECRET: rawEnv.JWT_ACCESS_SECRET?.trim() || undefined,
+    JWT_REFRESH_SECRET: rawEnv.JWT_REFRESH_SECRET?.trim() || undefined,
+  };
+
+  return envSchema.safeParse(normalizedEnv);
+}
+
+const parsed = parseEnv(process.env);
 
 if (!parsed.success) {
   console.error('❌ Invalid environment variables:');

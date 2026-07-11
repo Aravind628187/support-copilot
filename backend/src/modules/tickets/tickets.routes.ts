@@ -35,9 +35,15 @@ router.get(
       order,
     } = req.query as unknown as ListTicketsQuery;
 
-    const pageParams = parsePageParams(req.query as Record<string, unknown>);
+    const pageParams = parsePageParams(
+      req.query as Record<string, unknown>,
+    );
 
-    const result = await service.listTickets(
+    const tickets = await service.listTickets(
+      {
+        id: req.user!.id,
+        role: req.user!.role,
+      },
       {
         search,
         status,
@@ -46,11 +52,11 @@ router.get(
         sort,
         order,
       },
-      pageParams
+      pageParams,
     );
 
-    res.json(result);
-  })
+    res.json(tickets);
+  }),
 );
 
 router.get(
@@ -91,7 +97,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const id = req.params.id!;
 
-    const ticket = await service.getTicket(id);
+    const ticket = await service.getTicket(id, {
+     id: req.user!.id,
+     role: req.user!.role,
+   });
 
     res.json(ticket);
   })

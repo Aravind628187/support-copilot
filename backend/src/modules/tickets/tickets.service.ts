@@ -54,8 +54,18 @@ function buildOrderBy(sort: ListFilters['sort'], order: ListFilters['order']): P
   return [primary, { id: 'asc' }];
 }
 
-export async function listTickets(filters: ListFilters, pageParams: PageParams) {
+export async function listTickets(
+  actor: { id: string; role: string },
+  filters: ListFilters,
+  pageParams: PageParams,
+) {
   const where = buildWhere(filters);
+
+  // Only ADMIN can see every ticket.
+  // Everyone else only sees tickets assigned to them.
+  if (actor.role !== 'ADMIN') {
+    where.assigneeId = actor.id;
+  }
 
   const [items, total] = await Promise.all([
     prisma.ticket.findMany({
@@ -105,20 +115,49 @@ export async function exportTicketsCsv(filters: ListFilters): Promise<string> {
   ]);
 }
 
-export async function getTicket(id: string) {
+export async function getTicket(
+  id: string,
+  actor: { id: string; role: string },
+) {
   const ticket = await prisma.ticket.findFirst({
-    where: { id, deletedAt: null },
+    where: {
+      id,
+      deletedAt: null,
+    },
     include: {
       ...ticketInclude,
       messages: {
-        include: { author: { select: { id: true, name: true } } },
-        orderBy: { createdAt: 'asc' },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
       },
     },
   });
-  if (!ticket) throw ApiError.notFound('Ticket not found');
+
+  if (!ticket) {
+    throw ApiError.notFound('Ticket not found');
+  }
+
+  if (
+    actor.role !== 'ADMIN' &&
+    ticket.assigneeId !== actor.id
+  ) {
+    throw ApiError.forbidden(
+      'You are not allowed to view this ticket',
+    );
+  }
+
   return ticket;
 }
+
 export async function createTicket(
   actor: { id: string },
   data: {

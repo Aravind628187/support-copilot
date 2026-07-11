@@ -17,3 +17,10 @@ function shutdown(signal: string) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Support Copilot API is running 🚀"
+  });
+});

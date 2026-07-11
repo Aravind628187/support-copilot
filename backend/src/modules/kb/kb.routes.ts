@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { requireAuth, requireVerified } from '../../middleware/auth';
+import { requireRole } from '../../middleware/rbac';
 import { validate } from '../../middleware/validate';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { parsePageParams } from '../../utils/pagination';
@@ -14,8 +15,15 @@ import * as service from './kb.service';
 
 const router = Router();
 
+/**
+ * All Knowledge Base routes require authentication.
+ */
 router.use(requireAuth());
 
+/**
+ * GET /api/kb
+ * Any authenticated user can view/search articles.
+ */
 router.get(
   '/',
   validate({ query: listArticlesQuerySchema }),
@@ -26,32 +34,38 @@ router.get(
     };
 
     const pageParams = parsePageParams(
-      req.query as Record<string, unknown>
+      req.query as Record<string, unknown>,
     );
 
     const articles = await service.listArticles(
       { search, tag },
-      pageParams
+      pageParams,
     );
 
     res.json(articles);
   }),
 );
 
+/**
+ * GET /api/kb/:id
+ * Any authenticated user can read an article.
+ */
 router.get(
   '/:id',
   validate({ params: idParamSchema }),
   asyncHandler(async (req, res) => {
-    const id = req.params.id!;
-
-    const article = await service.getArticle(id);
-
+    const article = await service.getArticle(req.params.id!);
     res.json(article);
   }),
 );
 
+/**
+ * POST /api/kb
+ * ADMIN only
+ */
 router.post(
   '/',
+  requireRole('ADMIN'),
   requireVerified(),
   validate({ body: createArticleSchema }),
   asyncHandler(async (req, res) => {
@@ -71,18 +85,21 @@ router.post(
   }),
 );
 
+/**
+ * PATCH /api/kb/:id
+ * ADMIN only
+ */
 router.patch(
   '/:id',
+  requireRole('ADMIN'),
   requireVerified(),
   validate({
     params: idParamSchema,
     body: updateArticleSchema,
   }),
   asyncHandler(async (req, res) => {
-    const id = req.params.id!;
-
     const article = await service.updateArticle(
-      id,
+      req.params.id!,
       req.body,
     );
 
@@ -98,20 +115,23 @@ router.patch(
   }),
 );
 
+/**
+ * DELETE /api/kb/:id
+ * ADMIN only
+ */
 router.delete(
   '/:id',
+  requireRole('ADMIN'),
   requireVerified(),
   validate({ params: idParamSchema }),
   asyncHandler(async (req, res) => {
-    const id = req.params.id!;
-
-    await service.softDeleteArticle(id);
+    await service.softDeleteArticle(req.params.id!);
 
     await recordAudit({
       actorId: req.user!.id,
       action: 'kb.delete',
       entityType: 'KnowledgeBaseArticle',
-      entityId: id,
+      entityId: req.params.id!,
     });
 
     res.status(204).send();

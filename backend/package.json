@@ -4,11 +4,11 @@
   "private": true,
   "description": "SupportCopilot API — auth, tickets, knowledge base, and Claude-powered reply drafting.",
   "type": "commonjs",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node scripts/start-with-env.js",
+    "start": "node dist/src/index.js",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

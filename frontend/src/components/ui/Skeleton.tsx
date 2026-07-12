@@ -26,7 +26,7 @@ export function TicketRowSkeleton() {
 
 export function DashboardCardSkeleton() {
   return (
-    <div className="rounded-lg border border-ink-200 p-4 dark:border-ink-800">
+    <div className="rounded-2xl border border-ink-200/80 bg-white/90 p-4 shadow-sm dark:border-ink-800 dark:bg-ink-900/90">
       <Skeleton className="mb-3 h-4 w-24" />
       <Skeleton className="h-8 w-16" />
     </div>

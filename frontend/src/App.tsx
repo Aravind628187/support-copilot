@@ -9,6 +9,7 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPassword';
 import { ResetPasswordPage } from './pages/auth/ResetPassword';
 import { VerifyEmailPage } from './pages/auth/VerifyEmail';
 import { NotFoundPage } from './pages/NotFound';
+import { ProfilePage } from './pages/Profile';
 
 // Route-level code splitting: the dashboard (recharts) and ticket detail
 // (message thread + AI drafting) are the heaviest screens, so they ship in
@@ -52,6 +53,7 @@ export function App() {
               <Route path="/tickets/:id" element={<TicketDetailPage />} />
               <Route path="/kb" element={<KBListPage />} />
               <Route path="/kb/:id" element={<KBArticlePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
 
               <Route element={<RequireAdmin />}>
                 <Route path="/team" element={<TeamPage />} />

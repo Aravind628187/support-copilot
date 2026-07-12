@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Moon, Sun, LogOut, ChevronDown } from 'lucide-react';
+import { Search, Moon, Sun, LogOut, ChevronDown, UserRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { initials } from '../../lib/utils';
@@ -27,14 +27,14 @@ export function Topbar({
   }, []);
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-ink-100 bg-white px-4 dark:border-ink-800 dark:bg-ink-900">
+    <header className="flex h-16 items-center justify-between border-b border-ink-100 bg-white/80 px-4 backdrop-blur dark:border-ink-800 dark:bg-ink-900/80">
       <button
         onClick={onOpenPalette}
-        className="flex h-9 w-full max-w-xs items-center gap-2 rounded-sm border border-ink-200 px-3 text-sm text-ink-400 transition-colors duration-micro hover:border-ink-300 dark:border-ink-800"
+        className="flex h-10 w-full max-w-xl items-center gap-2 rounded-2xl border border-ink-200/80 bg-ink-50/80 px-3 text-sm text-ink-400 transition-all duration-200 hover:border-accent-300 hover:bg-white dark:border-ink-800 dark:bg-ink-950/70 dark:hover:border-accent-500/40"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
         <span className="flex-1 text-left">Search or jump to…</span>
-        <kbd className="rounded border border-ink-200 px-1.5 py-0.5 font-mono text-[10px] dark:border-ink-700">
+        <kbd className="rounded-lg border border-ink-200 px-1.5 py-0.5 font-mono text-[10px] dark:border-ink-700">
           ⌘K
         </kbd>
       </button>
@@ -43,7 +43,7 @@ export function Topbar({
         <button
           onClick={onToggleTheme}
           aria-label="Toggle dark mode"
-          className="flex h-9 w-9 items-center justify-center rounded-sm text-ink-600 hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-ink-600 transition-colors hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
         >
           {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
@@ -52,7 +52,7 @@ export function Topbar({
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((o) => !o)}
-              className="flex items-center gap-2 rounded-sm px-2 py-1.5 hover:bg-ink-100 dark:hover:bg-ink-800"
+              className="flex items-center gap-2 rounded-2xl px-2 py-1.5 hover:bg-ink-100 dark:hover:bg-ink-800"
               aria-haspopup="menu"
               aria-expanded={menuOpen}
             >
@@ -65,12 +65,20 @@ export function Topbar({
             {menuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 mt-1 w-44 rounded-sm border border-ink-100 bg-white py-1 shadow-lg dark:border-ink-800 dark:bg-ink-900"
+                className="absolute right-0 mt-2 w-48 rounded-2xl border border-ink-100 bg-white p-2 shadow-xl dark:border-ink-800 dark:bg-ink-900"
               >
                 <button
                   role="menuitem"
+                  onClick={() => navigate('/profile')}
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-ink-800 hover:bg-ink-100 dark:text-ink-100 dark:hover:bg-ink-800"
+                >
+                  <UserRound className="h-4 w-4" />
+                  Profile
+                </button>
+                <button
+                  role="menuitem"
                   onClick={() => void logout().then(() => navigate('/login'))}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink-800 hover:bg-ink-100 dark:text-ink-100 dark:hover:bg-ink-800"
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-ink-800 hover:bg-ink-100 dark:text-ink-100 dark:hover:bg-ink-800"
                 >
                   <LogOut className="h-4 w-4" />
                   Log out

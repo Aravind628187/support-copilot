@@ -81,11 +81,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             : undefined
         }
         className={cn(
-          'h-10 w-full rounded-sm border border-ink-200 bg-white px-3 text-sm text-ink-950 placeholder:text-ink-400',
-          'transition-colors duration-150',
-          'focus:outline-none focus:ring-2 focus:ring-accent-500',
+          'h-10 w-full rounded-xl border border-ink-200/80 bg-white/90 px-3 text-sm text-ink-950 placeholder:text-ink-400',
+          'transition-all duration-150',
+          'focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20',
           'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-400',
-          'dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100',
+          'dark:border-ink-800 dark:bg-ink-900/90 dark:text-ink-100',
           error && 'border-danger-500 focus:ring-danger-500',
           className
         )}
@@ -125,11 +125,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             : undefined
         }
         className={cn(
-          'min-h-[96px] w-full rounded-sm border border-ink-200 bg-white px-3 py-2 text-sm text-ink-950 placeholder:text-ink-400 resize-y',
-          'transition-colors duration-150',
-          'focus:outline-none focus:ring-2 focus:ring-accent-500',
+          'min-h-[96px] w-full rounded-xl border border-ink-200/80 bg-white/90 px-3 py-2 text-sm text-ink-950 placeholder:text-ink-400 resize-y',
+          'transition-all duration-150',
+          'focus:border-accent-500 focus:outline-none focus:ring-2 focus:ring-accent-500/20',
           'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-400',
-          'dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100',
+          'dark:border-ink-800 dark:bg-ink-900/90 dark:text-ink-100',
           error && 'border-danger-500 focus:ring-danger-500',
           className
         )}

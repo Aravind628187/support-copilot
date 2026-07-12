@@ -30,9 +30,16 @@ export function TeamPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold">Team</h1>
-        <p className="text-sm text-ink-600 dark:text-ink-400">Manage agent roles and access.</p>
+      <div className="rounded-3xl border border-ink-200/70 bg-white/80 p-5 shadow-sm dark:border-ink-800 dark:bg-ink-900/70">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-xl font-semibold">Team</h1>
+            <p className="text-sm text-ink-600 dark:text-ink-400">Manage agent roles and access with clarity.</p>
+          </div>
+          <div className="rounded-full bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 dark:bg-accent-500/10 dark:text-accent-400">
+            {users?.length ?? 0} members
+          </div>
+        </div>
       </div>
 
       <Card>
@@ -45,9 +52,9 @@ export function TeamPage() {
                 </div>
               ))
             : users?.map((u) => (
-                <div key={u.id} className="flex items-center justify-between gap-3 p-4">
+                <div key={u.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-pill bg-accent-100 text-xs font-semibold text-accent-700 dark:bg-accent-500/20 dark:text-accent-400">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-100 text-sm font-semibold text-accent-700 dark:bg-accent-500/20 dark:text-accent-400">
                       {initials(u.name)}
                     </div>
                     <div>
@@ -55,7 +62,7 @@ export function TeamPage() {
                       <p className="text-xs text-ink-400">{u.email}</p>
                     </div>
                     {!u.isEmailVerified && (
-                      <span className="rounded-pill bg-warning-50 px-2 py-0.5 text-xs text-warning-600 dark:bg-warning-500/10">
+                      <span className="rounded-full bg-warning-50 px-2 py-0.5 text-xs text-warning-600 dark:bg-warning-500/10">
                         Unverified
                       </span>
                     )}

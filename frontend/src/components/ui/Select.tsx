@@ -20,10 +20,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={id}
           className={cn(
-            'h-10 w-full appearance-none rounded-sm border border-ink-200 bg-white pl-3 pr-8 text-sm text-ink-950',
-            'transition-colors duration-micro focus-visible:border-accent-500',
+            'h-10 w-full appearance-none rounded-xl border border-ink-200/80 bg-white/90 pl-3 pr-8 text-sm text-ink-950',
+            'transition-all duration-150 focus-visible:border-accent-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/20',
             'disabled:cursor-not-allowed disabled:bg-ink-50 disabled:text-ink-400',
-            'dark:bg-ink-900 dark:border-ink-800 dark:text-ink-100',
+            'dark:bg-ink-900/90 dark:border-ink-800 dark:text-ink-100',
             className,
           )}
           {...props}

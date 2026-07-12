@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatHours, initials } from '../lib/utils';
+import { formatCompactNumber, formatHours, initials } from '../lib/utils';
 
 describe('formatHours', () => {
   it('formats sub-hour durations in minutes (happy path)', () => {
@@ -30,5 +30,12 @@ describe('initials', () => {
 
   it('handles extra whitespace without producing blank initials (failure mode)', () => {
     expect(initials('  Sam   Agent  ')).toBe('SA');
+  });
+});
+
+describe('formatCompactNumber', () => {
+  it('formats large numbers into compact notation', () => {
+    expect(formatCompactNumber(1250)).toBe('1.3K');
+    expect(formatCompactNumber(2500000)).toBe('2.5M');
   });
 });

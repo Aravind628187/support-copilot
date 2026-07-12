@@ -5,7 +5,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        'rounded-lg border border-ink-200 bg-white shadow-sm dark:border-ink-800 dark:bg-ink-900',
+        'rounded-2xl border border-ink-200/80 bg-white/90 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.22)] backdrop-blur dark:border-ink-800/80 dark:bg-ink-900/80',
         className,
       )}
       {...props}
@@ -14,9 +14,9 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('flex items-center justify-between p-4', className)} {...props} />;
+  return <div className={cn('flex items-center justify-between border-b border-ink-100/80 px-5 py-4 dark:border-ink-800/80', className)} {...props} />;
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4 pt-0', className)} {...props} />;
+  return <div className={cn('p-5', className)} {...props} />;
 }

@@ -10,14 +10,14 @@ import {
   Bar,
   CartesianGrid,
 } from 'recharts';
-import { Clock, Inbox, Users } from 'lucide-react';
+import { Activity, Clock3, Inbox, Sparkles, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { fetchDashboardSummary } from '../api/users';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { DashboardCardSkeleton } from '../components/ui/Skeleton';
 import { ErrorState } from '../components/ui/EmptyState';
 import { Seo } from '../components/Seo';
-import { formatHours } from '../lib/utils';
+import { formatCompactNumber, formatHours } from '../lib/utils';
 
 const STATUS_COLORS: Record<string, string> = {
   OPEN: '#3654D1',
@@ -39,11 +39,25 @@ export function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Dashboard" description="Ticket volume, resolution time, and agent workload at a glance." />
-      <div>
-        <h1 className="text-xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-ink-600 dark:text-ink-400">
-          Everything happening across your queue, at a glance.
-        </p>
+      <div className="rounded-3xl border border-ink-200/70 bg-gradient-to-br from-accent-600 via-accent-500 to-violet-600 p-6 text-white shadow-[0_30px_80px_-35px_rgba(54,84,209,0.95)]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.28em] text-white/90">
+              <Sparkles className="h-3.5 w-3.5" />
+              Executive view
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold">Support operations, elevated.</h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/80">
+                Track queue health, response performance, and team capacity from one polished workspace.
+              </p>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm backdrop-blur">
+            <p className="text-white/70">Today’s pulse</p>
+            <p className="mt-1 font-semibold">{formatCompactNumber(data?.openTicketsCount ?? 0)} active conversations</p>
+          </div>
+        </div>
       </div>
 
       {isPending || !data ? (
@@ -57,7 +71,7 @@ export function DashboardPage() {
               value={String(data.openTicketsCount)}
             />
             <StatCard
-              icon={<Clock className="h-4 w-4" />}
+              icon={<Clock3 className="h-4 w-4" />}
               label="Avg. resolution time"
               value={formatHours(data.avgResolutionHours)}
             />
@@ -71,7 +85,10 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Card className="lg:col-span-2">
               <CardHeader>
-                <h2 className="text-sm font-semibold">Tickets created — last 14 days</h2>
+                <div>
+                  <h2 className="text-sm font-semibold">Tickets created — last 14 days</h2>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">Demand trend across your support queue.</p>
+                </div>
               </CardHeader>
               <CardBody>
                 <ResponsiveContainer width="100%" height={220}>
@@ -115,7 +132,10 @@ export function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <h2 className="text-sm font-semibold">By priority</h2>
+                <div>
+                  <h2 className="text-sm font-semibold">By priority</h2>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">Critical work at a glance.</p>
+                </div>
               </CardHeader>
               <CardBody>
                 <ResponsiveContainer width="100%" height={220}>
@@ -140,7 +160,10 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
-                <h2 className="text-sm font-semibold">By status</h2>
+                <div>
+                  <h2 className="text-sm font-semibold">By status</h2>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">How the queue is flowing today.</p>
+                </div>
               </CardHeader>
               <CardBody className="flex flex-col gap-2">
                 {data.ticketsByStatus.map((row) => {
@@ -166,7 +189,10 @@ export function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <h2 className="text-sm font-semibold">Agent workload (open tickets)</h2>
+                <div>
+                  <h2 className="text-sm font-semibold">Agent workload</h2>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">Open tickets by teammate.</p>
+                </div>
               </CardHeader>
               <CardBody className="flex flex-col gap-2">
                 {data.agentWorkload.length === 0 ? (
@@ -205,13 +231,20 @@ function DashboardSkeleton() {
 
 function StatCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <Card>
-      <CardBody className="pt-4">
-        <div className="mb-2 flex items-center gap-2 text-ink-400">
-          {icon}
-          <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+    <Card className="overflow-hidden">
+      <CardBody className="relative">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-50 text-accent-600 dark:bg-accent-500/10 dark:text-accent-400">
+            {icon}
+          </div>
+          <div className="rounded-full bg-ink-100 p-1.5 text-ink-400 dark:bg-ink-800">
+            <Activity className="h-3.5 w-3.5" />
+          </div>
         </div>
-        <p className="font-mono text-2xl font-semibold">{value}</p>
+        <div className="mb-2 text-xs font-medium uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">
+          {label}
+        </div>
+        <p className="font-mono text-2xl font-semibold text-ink-950 dark:text-ink-100">{value}</p>
       </CardBody>
     </Card>
   );

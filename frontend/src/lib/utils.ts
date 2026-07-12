@@ -27,3 +27,10 @@ export function initials(name: string): string {
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('');
 }
+
+export function formatCompactNumber(value: number): string {
+  const absValue = Math.abs(value);
+  if (absValue >= 1000000) return `${(value / 1000000).toFixed(absValue % 1000000 === 0 ? 0 : 1)}M`;
+  if (absValue >= 1000) return `${(value / 1000).toFixed(absValue % 1000 === 0 ? 0 : 1)}K`;
+  return value.toString();
+}

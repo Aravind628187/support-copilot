@@ -412,11 +412,10 @@ https://github.com/Aravind628187
 
 💼 LinkedIn
 
-(Add your LinkedIn URL)
+https://www.linkedin.com/in/chinthamanuaravindkumar/
 
 🌐 Portfolio
-
-(Add your portfolio URL)
+https://aravind-kumar-portfolio.vercel.app/
 
 ---
 

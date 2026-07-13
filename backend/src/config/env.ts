@@ -30,6 +30,8 @@ const envSchema = z.object({
 
   CORS_ORIGIN: z.string().min(1).default('http://localhost:5173'),
 
+  FRONTEND_URL: z.string().url().optional(),
+
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   JWT_ACCESS_SECRET: z
@@ -54,6 +56,10 @@ const envSchema = z.object({
   LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(5),
 
   LOGIN_RATE_LIMIT_WINDOW_MIN: z.coerce.number().int().positive().default(15),
+
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  GOOGLE_REDIRECT_URI: z.string().url().optional(),
 });
 
 export function parseEnv(rawEnv: NodeJS.ProcessEnv = process.env) {
@@ -88,6 +94,12 @@ export const isProduction = env.NODE_ENV === 'production';
 
 export const corsOrigins = env.CORS_ORIGIN.split(',').map((origin) =>
   origin.trim()
+);
+
+export const frontendUrl = env.FRONTEND_URL ?? corsOrigins[0] ?? 'http://localhost:5173';
+
+export const isGoogleOAuthConfigured = Boolean(
+  env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET && env.GOOGLE_REDIRECT_URI,
 );
 
 // Gemini is configured only if an API key exists.

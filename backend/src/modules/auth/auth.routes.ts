@@ -24,6 +24,8 @@ router.post(
 );
 router.post('/refresh', asyncHandler(controller.refreshHandler));
 router.post('/logout', asyncHandler(controller.logoutHandler));
+router.get('/google', asyncHandler(controller.googleStartHandler));
+router.get('/google/callback', asyncHandler(controller.googleCallbackHandler));
 router.get('/sessions', requireAuth(), asyncHandler(controller.listSessionsHandler));
 router.delete(
   '/sessions/:sessionId',

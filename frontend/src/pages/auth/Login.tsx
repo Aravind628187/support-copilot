@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 
 import { Button } from '../../components/ui/Button';
@@ -10,10 +10,12 @@ import { Seo } from '../../components/Seo';
 import { useAuth } from '../../context/AuthContext';
 import { loginSchema, LoginFormValues } from '../../lib/validation';
 import { extractErrorMessage } from '../../api/client';
+import { googleLoginUrl } from '../../api/auth';
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -23,6 +25,10 @@ export function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+
+  useEffect(() => {
+    if (user) navigate('/', { replace: true });
+  }, [navigate, user]);
 
   async function onSubmit(values: LoginFormValues) {
     setServerError(null);
@@ -106,6 +112,22 @@ export function LoginPage() {
               Log in
             </Button>
           </form>
+
+          <div className="my-5 flex items-center gap-3 text-xs text-ink-400">
+            <span className="h-px flex-1 bg-ink-200 dark:bg-ink-800" />
+            <span>or</span>
+            <span className="h-px flex-1 bg-ink-200 dark:bg-ink-800" />
+          </div>
+
+          <Button type="button" variant="secondary" className="w-full" onClick={() => window.location.assign(googleLoginUrl())}>
+            Continue with Google
+          </Button>
+
+          {searchParams.get('oauth') === 'error' && (
+            <p role="alert" className="mt-3 text-sm text-danger-500">
+              Google sign-in was cancelled or could not be completed.
+            </p>
+          )}
 
           <div className="mt-5 flex items-center justify-between text-sm">
             <Link

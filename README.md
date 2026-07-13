@@ -66,6 +66,13 @@ Optional AI configuration:
 - `GEMINI_API_KEY` — enables AI drafting.
 - `GEMINI_MODEL` — defaults to `gemini-2.5-flash`.
 
+Optional Google sign-in configuration:
+
+- Create a **Web application** OAuth client in [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+- Add `http://localhost:4000/api/auth/google/callback` (or your deployed API equivalent) to **Authorized redirect URIs**.
+- Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and `FRONTEND_URL` in `backend/.env`.
+- Apply the database migration with `npm run db:migrate` before deploying.
+
 Set `VITE_API_URL` in the frontend only when the API is hosted at a different origin. Local Vite development proxies API calls to port 4000.
 
 ## Quality checks

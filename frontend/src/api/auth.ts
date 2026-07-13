@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, API_BASE_URL } from './client';
 import type { User } from '../types';
 
 export async function signup(input: { name: string; email: string; password: string }) {
@@ -33,4 +33,8 @@ export async function resetPassword(token: string, password: string) {
 export async function verifyEmail(token: string) {
   const { data } = await api.post<{ message: string }>('/auth/verify-email', { token });
   return data.message;
+}
+
+export function googleLoginUrl() {
+  return `${API_BASE_URL}/auth/google`;
 }

@@ -1,10 +1,12 @@
 import { Response } from 'express';
-import { env } from '../config/env';
+import { env, isProduction } from '../config/env';
 
 const baseCookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: 'none' as const,
+  // Secure cookies are required when the frontend and API live on separate
+  // production origins. Local HTTP development cannot store Secure cookies.
+  secure: isProduction,
+  sameSite: isProduction ? ('none' as const) : ('lax' as const),
 };
 
 export function setAuthCookies(
@@ -35,4 +37,22 @@ export function clearAuthCookies(res: Response) {
     ...baseCookieOptions,
     path: '/',
   });
+}
+
+const googleStateCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: 'lax' as const,
+  path: '/api/auth/google',
+};
+
+export function setGoogleOAuthStateCookie(res: Response, state: string) {
+  res.cookie('googleOAuthState', state, {
+    ...googleStateCookieOptions,
+    maxAge: 10 * 60 * 1000,
+  });
+}
+
+export function clearGoogleOAuthStateCookie(res: Response) {
+  res.clearCookie('googleOAuthState', googleStateCookieOptions);
 }

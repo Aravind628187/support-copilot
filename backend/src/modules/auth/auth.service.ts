@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma';
-import { corsOrigins } from '../../config/env';
+import { corsOrigins, env, isGoogleOAuthConfigured } from '../../config/env';
 import { hashPassword, verifyPassword } from '../../utils/password';
 import {
   generateRawToken,
@@ -13,6 +13,7 @@ import {
 import { sendPasswordResetEmail, sendVerificationEmail } from '../../lib/email';
 import { recordAudit } from '../audit/audit.service';
 import { ApiError } from '../../utils/apiError';
+import crypto from 'node:crypto';
 import type { LoginInput, SignupInput } from './auth.schema';
 
 const PASSWORD_RESET_TTL_MIN = 30;
@@ -80,6 +81,103 @@ export async function login(input: LoginInput) {
 
   await recordAudit({ actorId: user.id, action: 'user.login', entityType: 'User', entityId: user.id });
 
+  return { user: publicUser(user), accessToken, refreshToken };
+}
+
+interface GoogleProfile {
+  sub?: string;
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+  given_name?: string;
+}
+
+function requireGoogleConfiguration() {
+  if (!isGoogleOAuthConfigured || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) {
+    throw new ApiError(503, 'GOOGLE_OAUTH_UNAVAILABLE', 'Google sign-in is not configured');
+  }
+  return {
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+    redirectUri: env.GOOGLE_REDIRECT_URI,
+  };
+}
+
+function issueSession(user: { id: string; role: 'ADMIN' | 'AGENT'; name: string; email: string; isEmailVerified: boolean }) {
+  const accessToken = signAccessToken({ sub: user.id, role: user.role });
+  const refreshToken = signRefreshToken(user.id);
+  return { accessToken, refreshToken };
+}
+
+export function googleAuthorizationUrl(state: string) {
+  const { clientId, redirectUri } = requireGoogleConfiguration();
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  url.searchParams.set('client_id', clientId);
+  url.searchParams.set('redirect_uri', redirectUri);
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('scope', 'openid email profile');
+  url.searchParams.set('state', state);
+  url.searchParams.set('prompt', 'select_account');
+  return url.toString();
+}
+
+export async function loginWithGoogle(code: string) {
+  const { clientId, clientSecret, redirectUri } = requireGoogleConfiguration();
+  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    }),
+  });
+
+  if (!tokenResponse.ok) throw ApiError.unauthorized('Google sign-in failed. Please try again.');
+  const token = await tokenResponse.json() as { access_token?: string };
+  if (!token.access_token) throw ApiError.unauthorized('Google sign-in failed. Please try again.');
+
+  const profileResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+    headers: { Authorization: `Bearer ${token.access_token}` },
+  });
+  if (!profileResponse.ok) throw ApiError.unauthorized('Google sign-in failed. Please try again.');
+  const profile = await profileResponse.json() as GoogleProfile;
+  if (!profile.sub || !profile.email || profile.email_verified !== true) {
+    throw ApiError.unauthorized('Google did not provide a verified email address.');
+  }
+
+  const email = profile.email.toLowerCase();
+  const account = await prisma.oAuthAccount.findUnique({
+    where: { provider_providerAccountId: { provider: 'google', providerAccountId: profile.sub } },
+    include: { user: true },
+  });
+  let user = account?.user;
+
+  if (!user) {
+    user = await prisma.$transaction(async (tx) => {
+      const existing = await tx.user.findUnique({ where: { email } });
+      const linkedUser = existing ?? await tx.user.create({
+        data: {
+          name: profile.name?.trim() || profile.given_name?.trim() || 'Google user',
+          email,
+          passwordHash: await hashPassword(crypto.randomBytes(32).toString('hex')),
+          isEmailVerified: true,
+          role: (await tx.user.count()) === 0 ? 'ADMIN' : 'AGENT',
+        },
+      });
+      await tx.oAuthAccount.create({
+        data: { provider: 'google', providerAccountId: profile.sub!, userId: linkedUser.id },
+      });
+      return linkedUser;
+    });
+  }
+
+  if (user.deletedAt) throw ApiError.unauthorized('This account is unavailable');
+  const { accessToken, refreshToken } = issueSession(user);
+  await prisma.refreshToken.create({ data: { userId: user.id, tokenHash: hashToken(refreshToken), expiresAt: refreshTokenExpiry() } });
+  await recordAudit({ actorId: user.id, action: 'user.login.google', entityType: 'User', entityId: user.id });
   return { user: publicUser(user), accessToken, refreshToken };
 }
 

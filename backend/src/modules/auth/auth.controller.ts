@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { setAuthCookies, clearAuthCookies } from '../../lib/cookies';
+import crypto from 'node:crypto';
+import { setAuthCookies, clearAuthCookies, clearGoogleOAuthStateCookie, setGoogleOAuthStateCookie } from '../../lib/cookies';
+import { frontendUrl } from '../../config/env';
+import { ApiError } from '../../utils/apiError';
 import * as authService from './auth.service';
 
 export async function signupHandler(req: Request, res: Response) {
@@ -28,6 +31,42 @@ export async function logoutHandler(req: Request, res: Response) {
   await authService.logout(presented);
   clearAuthCookies(res);
   res.status(204).send();
+}
+
+function redirectToLogin(res: Response, oauth: 'success' | 'error') {
+  const url = new URL('/login', frontendUrl);
+  url.searchParams.set('oauth', oauth);
+  res.redirect(url.toString());
+}
+
+export async function googleStartHandler(_req: Request, res: Response) {
+  const state = crypto.randomBytes(32).toString('hex');
+  setGoogleOAuthStateCookie(res, state);
+  res.redirect(authService.googleAuthorizationUrl(state));
+}
+
+export async function googleCallbackHandler(req: Request, res: Response) {
+  const state = typeof req.query.state === 'string' ? req.query.state : '';
+  const expectedState = req.cookies?.googleOAuthState as string | undefined;
+  clearGoogleOAuthStateCookie(res);
+
+  if (
+    !state ||
+    !expectedState ||
+    state.length !== expectedState.length ||
+    !crypto.timingSafeEqual(Buffer.from(state), Buffer.from(expectedState))
+  ) {
+    throw ApiError.unauthorized('Google sign-in could not be verified. Please try again.');
+  }
+
+  if (req.query.error || typeof req.query.code !== 'string') {
+    redirectToLogin(res, 'error');
+    return;
+  }
+
+  const { accessToken, refreshToken } = await authService.loginWithGoogle(req.query.code);
+  setAuthCookies(res, accessToken, refreshToken);
+  redirectToLogin(res, 'success');
 }
 
 export async function meHandler(req: Request, res: Response) {

@@ -7,8 +7,8 @@ import {
 
 export function Footer() {
   return (
-    <footer className="mt-8 rounded-[16px] border border-ink-200/70 bg-gradient-to-br from-white/90 via-white/80 to-ink-50/80 p-4 text-xs text-ink-600 shadow-[0_12px_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur dark:border-ink-800 dark:from-ink-950/85 dark:via-ink-950 dark:to-ink-900 dark:text-ink-400">
-      <div className="grid gap-4 sm:grid-cols-[1.5fr_2fr] lg:grid-cols-[1.2fr_1fr_1fr]">
+    <footer className="w-full border-t border-ink-200/70 bg-gradient-to-br from-white/90 via-white/80 to-ink-50/80 px-5 pb-24 pt-8 text-xs text-ink-600 shadow-[0_-12px_32px_-24px_rgba(15,23,42,0.18)] backdrop-blur dark:border-ink-800 dark:from-ink-950/85 dark:via-ink-950 dark:to-ink-900 dark:text-ink-400 sm:px-8 sm:py-8">
+      <div className="mx-auto grid w-full max-w-shell gap-4 sm:grid-cols-[1.5fr_2fr] lg:grid-cols-[1.2fr_1fr_1fr]">
         {/* Brand */}
         <div>
           <p className="text-sm font-semibold text-ink-950 dark:text-white">
@@ -72,7 +72,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-ink-200/80 pt-4 text-xs text-ink-500 dark:border-ink-800 dark:text-ink-400">
+      <div className="mx-auto mt-6 max-w-shell border-t border-ink-200/80 pt-4 text-xs text-ink-500 dark:border-ink-800 dark:text-ink-400">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span>Version 2.0.0 • 2026</span>
 

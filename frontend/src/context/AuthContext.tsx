@@ -39,8 +39,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await authApi.logout();
-    setUser(null);
+    try {
+      await authApi.logout();
+    } catch {
+      // If the network or server logout fails, still clear local state
+      // so the UI doesn't remain stuck. The server session/cookies may
+      // be invalidated on next successful request or by the server.
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   return (

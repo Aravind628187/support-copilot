@@ -2,8 +2,10 @@ import { Bell, BellRing } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export function NotificationsPage() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Notifications" description="Configure alerts and notifications for support workflows." />
@@ -17,7 +19,7 @@ export function NotificationsPage() {
               Manage how your team receives ticket alerts, SLA escalations, and customer updates.
             </p>
           </div>
-          <Button size="sm" variant="secondary">Notification rules</Button>
+          <Button size="sm" variant="secondary" onClick={() => navigate('/settings')}>Notification rules</Button>
         </div>
       </div>
 

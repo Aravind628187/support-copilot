@@ -1,7 +1,9 @@
 import { FileText, Download, CalendarDays, ArrowRight, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { ticketsExportCsvUrl } from '../api/tickets';
 
 const reportCards = [
   {
@@ -31,6 +33,8 @@ const recentExports = [
 ];
 
 export function ReportsPage() {
+  const navigate = useNavigate();
+  const exportUrl = ticketsExportCsvUrl({});
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Reports" description="Generate support reports and export them for leadership review." />
@@ -65,9 +69,11 @@ export function ReportsPage() {
               </CardHeader>
               <CardBody className="space-y-4">
                 <p className="text-sm text-ink-500 dark:text-ink-400">{card.description}</p>
-                <Button size="sm" variant="secondary">
-                  <Download className="h-4 w-4" /> {card.action}
-                </Button>
+                <a href={exportUrl} download>
+                  <Button size="sm" variant="secondary">
+                    <Download className="h-4 w-4" /> {card.action} (CSV)
+                  </Button>
+                </a>
               </CardBody>
             </Card>
           );
@@ -81,7 +87,7 @@ export function ReportsPage() {
               <h2 className="text-sm font-semibold">Recent exports</h2>
               <p className="text-sm text-ink-500 dark:text-ink-400">Review the latest generated report files and download history.</p>
             </div>
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" onClick={() => navigate('/tickets')}>
               <ArrowRight className="h-4 w-4" /> View all exports
             </Button>
           </div>
@@ -103,7 +109,9 @@ export function ReportsPage() {
                   <td className="px-4 py-3 text-ink-600 dark:text-ink-400">{item.type}</td>
                   <td className="px-4 py-3 text-ink-600 dark:text-ink-400">{item.date}</td>
                   <td className="px-4 py-3">
-                    <Button size="sm" variant="secondary">Download</Button>
+                    <a href={exportUrl} download>
+                      <Button size="sm" variant="secondary">Download CSV</Button>
+                    </a>
                   </td>
                 </tr>
               ))}

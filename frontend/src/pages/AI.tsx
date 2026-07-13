@@ -3,8 +3,10 @@ import { Sparkles, MessageCircle, Cpu, Zap, ShieldCheck } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export function AIPage() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-6">
       <Seo title="AI Assistant" description="AI-powered support drafting, knowledge recommendations, and productivity insights." />
@@ -68,7 +70,7 @@ export function AIPage() {
             <p className="text-sm text-ink-500 dark:text-ink-400">
               Control how AI drafts are stored, reviewed, and published across your support organization.
             </p>
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" onClick={() => navigate('/settings')}>
               Review policies
             </Button>
           </CardBody>
@@ -85,7 +87,7 @@ export function AIPage() {
             <p className="text-sm text-ink-500 dark:text-ink-400">
               AI recommendations are aligned with your internal knowledge base and latest product updates.
             </p>
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" onClick={() => navigate('/kb')}>
               Sync knowledge
             </Button>
           </CardBody>
@@ -102,7 +104,7 @@ export function AIPage() {
             <p className="text-sm text-ink-500 dark:text-ink-400">
               Identify the workflows where AI delivers the greatest time savings and consistency gains.
             </p>
-            <Button size="sm" variant="secondary">
+            <Button size="sm" variant="secondary" onClick={() => navigate('/analytics')}>
               View insights
             </Button>
           </CardBody>
@@ -125,6 +127,18 @@ function FeatureCard({
   cta: string;
   secondary?: boolean;
 }) {
+  const navigate = useNavigate();
+
+  function handleCta() {
+    const destinations: Record<string, string> = {
+      'Open assistant': '/assistant/chat',
+      'View suggestions': '/kb',
+      'Review usage': '/analytics',
+      'Configure flows': '/integrations',
+    };
+    navigate(destinations[cta] ?? '/assistant/chat');
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -135,7 +149,7 @@ function FeatureCard({
           <h3 className="text-lg font-semibold text-ink-950 dark:text-ink-100">{title}</h3>
           <p className="mt-2 text-sm text-ink-600 dark:text-ink-400">{description}</p>
         </div>
-        <Button size="sm" variant={secondary ? 'secondary' : 'primary'}>
+        <Button size="sm" variant={secondary ? 'secondary' : 'primary'} onClick={handleCta}>
           {cta}
         </Button>
       </CardBody>

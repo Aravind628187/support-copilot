@@ -30,6 +30,18 @@ router.get(
 );
 
 router.get(
+  '/export.csv',
+  validate({ query: listCustomersQuerySchema }),
+  asyncHandler(async (req, res) => {
+    const { search } = req.query as { search?: string };
+    const csv = await service.exportCustomersCsv(search);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="customers-${Date.now()}.csv"`);
+    res.send(csv);
+  }),
+);
+
+router.get(
   '/:id',
   validate({ params: idParamSchema }),
   asyncHandler(async (req, res) => {

@@ -1,9 +1,10 @@
 import { prisma } from '../../lib/prisma';
 import { ApiError } from '../../utils/apiError';
 import { parsePageParams, buildPagedResult, PageParams } from '../../utils/pagination';
+import { toCsv } from '../../utils/csv';
 
-export async function listCustomers(search: string | undefined, pageParams: PageParams) {
-  const where = search
+function customerWhere(search: string | undefined) {
+  return search
     ? {
         OR: [
           { name: { contains: search, mode: 'insensitive' as const } },
@@ -12,6 +13,10 @@ export async function listCustomers(search: string | undefined, pageParams: Page
         ],
       }
     : {};
+}
+
+export async function listCustomers(search: string | undefined, pageParams: PageParams) {
+  const where = customerWhere(search);
 
   const [items, total] = await Promise.all([
     prisma.customer.findMany({
@@ -24,6 +29,23 @@ export async function listCustomers(search: string | undefined, pageParams: Page
   ]);
 
   return buildPagedResult(items, total, pageParams);
+}
+
+export async function exportCustomersCsv(search: string | undefined) {
+  const customers = await prisma.customer.findMany({
+    where: customerWhere(search),
+    orderBy: { createdAt: 'desc' },
+    select: { name: true, email: true, company: true, createdAt: true },
+  });
+  return toCsv(
+    customers.map((customer) => ({
+      name: customer.name,
+      email: customer.email,
+      company: customer.company ?? '',
+      createdAt: customer.createdAt.toISOString(),
+    })),
+    ['name', 'email', 'company', 'createdAt'],
+  );
 }
 
 export async function getCustomer(id: string) {

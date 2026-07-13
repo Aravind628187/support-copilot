@@ -2,8 +2,10 @@ import { CalendarCheck, Clock3 } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export function CalendarPage() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Calendar" description="Manage your support schedule and agent availability." />
@@ -17,7 +19,7 @@ export function CalendarPage() {
               Plan agent shifts, SLA reminders, and customer follow-ups from one centralized calendar.
             </p>
           </div>
-          <Button size="sm" variant="secondary">Create event</Button>
+          <Button size="sm" variant="secondary" onClick={() => navigate('/tickets?new=1')}>Create event</Button>
         </div>
       </div>
 

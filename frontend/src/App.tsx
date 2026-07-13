@@ -29,6 +29,7 @@ const CustomerProfilePage = lazy(() =>
   import('./pages/customers/CustomerProfile').then((m) => ({ default: m.CustomerProfilePage })),
 );
 const AssistantPage = lazy(() => import('./pages/AI').then((m) => ({ default: m.AIPage })));
+const AssistantChatPage = lazy(() => import('./pages/assistant/Chat').then((m) => ({ default: m.AssistantChatPage })));
 const AnalyticsPage = lazy(() => import('./pages/Analytics').then((m) => ({ default: m.AnalyticsPage })));
 const ReportsPage = lazy(() => import('./pages/Reports').then((m) => ({ default: m.ReportsPage })));
 const CalendarPage = lazy(() => import('./pages/Calendar').then((m) => ({ default: m.CalendarPage })));
@@ -71,6 +72,7 @@ export function App() {
               <Route path="/kb" element={<KBListPage />} />
               <Route path="/kb/:id" element={<KBArticlePage />} />
               <Route path="/assistant" element={<AssistantPage />} />
+              <Route path="/assistant/chat" element={<AssistantChatPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />

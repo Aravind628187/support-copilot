@@ -5,9 +5,11 @@ import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Seo } from '../components/Seo';
 import { initials } from '../lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 export function ProfilePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const roleLabel = useMemo(() => (user?.role === 'ADMIN' ? 'Administrator' : 'Agent'), [user?.role]);
 
@@ -86,7 +88,7 @@ export function ProfilePage() {
                   <p className="text-sm text-ink-500 dark:text-ink-400">Dark mode is available instantly from the header.</p>
                 </div>
               </div>
-              <Button variant="secondary" size="sm">Adjust</Button>
+              <Button variant="secondary" size="sm" onClick={() => navigate('/settings')}>Adjust</Button>
             </div>
 
             <div className="flex items-center justify-between rounded-2xl border border-ink-100 p-4 dark:border-ink-800">
@@ -99,7 +101,7 @@ export function ProfilePage() {
                   <p className="text-sm text-ink-500 dark:text-ink-400">Keep your queue moving with timely updates.</p>
                 </div>
               </div>
-              <Button variant="secondary" size="sm">Manage</Button>
+              <Button variant="secondary" size="sm" onClick={() => navigate('/notifications')}>Manage</Button>
             </div>
 
             <div className="rounded-2xl border border-dashed border-accent-200 bg-accent-50/70 p-4 text-sm text-accent-700 dark:border-accent-800 dark:bg-accent-500/10 dark:text-accent-300">

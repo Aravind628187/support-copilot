@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, API_BASE_URL } from './client';
 import type { PagedResult, Ticket, TicketMessage, TicketPriority, TicketStatus } from '../types';
 
 export interface TicketListParams {
@@ -64,7 +64,7 @@ export function ticketsExportCsvUrl(params: TicketListParams): string {
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== '') search.set(key, String(value));
   });
-  return `/api/tickets/export.csv?${search.toString()}`;
+  return `${API_BASE_URL}/tickets/export.csv?${search.toString()}`;
 }
 
 export async function listMessages(ticketId: string) {

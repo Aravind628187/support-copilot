@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Download, Users, Sparkles, ShieldCheck } from 'lucide-react';
-import { listCustomers } from '../../api/customers';
+import { customersExportCsvUrl, listCustomers } from '../../api/customers';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -57,9 +57,11 @@ export function CustomersListPage() {
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <Button size="sm" variant="secondary" onClick={() => navigate('/settings')}>
-            <Download className="h-4 w-4" /> Export
-          </Button>
+          <a href={customersExportCsvUrl(search || undefined)} download>
+            <Button size="sm" variant="secondary">
+              <Download className="h-4 w-4" /> Export
+            </Button>
+          </a>
           <Button size="sm" onClick={() => navigate('/customers/new')}>
             <Plus className="h-4 w-4" /> Add customer
           </Button>

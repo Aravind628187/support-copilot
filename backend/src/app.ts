@@ -14,6 +14,7 @@ import customerRoutes from './modules/customers/customers.routes';
 import userRoutes from './modules/users/users.routes';
 import dashboardRoutes from './modules/dashboard/dashboard.routes';
 import auditRoutes from './modules/audit/audit.routes';
+import assistantRoutes from './modules/assistant/assistant.routes';
 
 export function createApp() {
   const app = express();
@@ -56,6 +57,7 @@ export function createApp() {
   app.use('/api/users', userRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/audit', auditRoutes);
+  app.use('/api/assistant', assistantRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

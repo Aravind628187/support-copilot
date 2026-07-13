@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, MessageSquare, ShieldCheck } from 'lucide-react';
@@ -8,10 +8,27 @@ import { Button } from '../../components/ui/Button';
 import { Seo } from '../../components/Seo';
 import { Badge } from '../../components/ui/Badge';
 import { formatDateTime } from '../../lib/utils';
+import { Textarea } from '../../components/ui/Textarea';
+import { useToast } from '../../components/ui/Toast';
 
 export function CustomerProfilePage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [note, setNote] = useState('');
+
+  useEffect(() => {
+    if (!id) return;
+    setNote(localStorage.getItem(`support-copilot.customer-note.${id}`) ?? '');
+  }, [id]);
+
+  function saveNote() {
+    if (!id || !note.trim()) return;
+    localStorage.setItem(`support-copilot.customer-note.${id}`, note.trim());
+    setIsAddingNote(false);
+    showToast({ variant: 'success', message: 'Private note saved on this device.' });
+  }
 
   const { data: customer, isError, refetch } = useQuery({
     queryKey: ['customer', id],
@@ -136,12 +153,30 @@ export function CustomerProfilePage() {
               </div>
             </CardHeader>
             <CardBody className="space-y-3">
-              <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 text-sm text-ink-600 dark:border-ink-800 dark:bg-ink-950/50 dark:text-ink-400">
-                Add notes to capture special instructions or escalation history for this customer.
-              </div>
-              <Button size="sm" variant="secondary">
-                Add note
-              </Button>
+              {isAddingNote ? (
+                <>
+                  <Textarea
+                    id="private-note"
+                    label="Private note"
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder="Add special instructions or escalation history…"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={saveNote} disabled={!note.trim()}>Save note</Button>
+                    <Button size="sm" variant="secondary" onClick={() => setIsAddingNote(false)}>Cancel</Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 text-sm text-ink-600 dark:border-ink-800 dark:bg-ink-950/50 dark:text-ink-400">
+                    {note || 'Add notes to capture special instructions or escalation history for this customer.'}
+                  </div>
+                  <Button size="sm" variant="secondary" onClick={() => setIsAddingNote(true)}>
+                    {note ? 'Edit note' : 'Add note'}
+                  </Button>
+                </>
+              )}
             </CardBody>
           </Card>
         </div>

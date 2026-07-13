@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Zap, Slack, Github, Gitlab, Globe2, Mail, Sparkles, Link2 } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { useToast } from '../components/ui/Toast';
 
 const integrations = [
   { name: 'Slack', description: 'Real-time ticket updates and customer alerts.', status: 'Connected', icon: Slack },
@@ -22,6 +24,46 @@ const integrations = [
 ];
 
 export function IntegrationsPage() {
+  const { showToast } = useToast();
+  const [statuses, setStatuses] = useState<Record<string, string>>({});
+  const [customIntegrations, setCustomIntegrations] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      setStatuses(JSON.parse(localStorage.getItem('support-copilot.integration-statuses') ?? '{}'));
+      setCustomIntegrations(JSON.parse(localStorage.getItem('support-copilot.custom-integrations') ?? '[]'));
+    } catch {
+      // A malformed browser cache should never make the integrations screen unusable.
+    }
+  }, []);
+
+  const allIntegrations = [
+    ...integrations,
+    ...customIntegrations.map((name) => ({ name, description: 'Custom workspace integration.', status: 'Available', icon: Link2 })),
+  ];
+
+  function setIntegrationStatus(name: string, status: string) {
+    setStatuses((current) => {
+      const next = { ...current, [name]: status };
+      localStorage.setItem('support-copilot.integration-statuses', JSON.stringify(next));
+      return next;
+    });
+  }
+
+  function addCustomIntegration() {
+    const name = window.prompt('Name your custom integration');
+    const normalizedName = name?.trim();
+    if (!normalizedName) return;
+    if (allIntegrations.some((integration) => integration.name.toLowerCase() === normalizedName.toLowerCase())) {
+      showToast({ variant: 'error', message: 'An integration with that name already exists.' });
+      return;
+    }
+    const next = [...customIntegrations, normalizedName];
+    setCustomIntegrations(next);
+    localStorage.setItem('support-copilot.custom-integrations', JSON.stringify(next));
+    showToast({ variant: 'success', message: `${normalizedName} was added to your integration catalog.` });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Integrations" description="Connect your support workspace with enterprise tools." />
@@ -34,15 +76,16 @@ export function IntegrationsPage() {
               Integrate SupportCopilot with your customer, collaboration, and AI tools for frictionless operations.
             </p>
           </div>
-          <Button size="sm" variant="secondary">
+          <Button size="sm" variant="secondary" onClick={addCustomIntegration}>
             Add custom integration
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {integrations.map((integration) => {
+        {allIntegrations.map((integration) => {
           const Icon = integration.icon;
+          const status = statuses[integration.name] ?? integration.status;
           return (
             <Card key={integration.name} className="overflow-hidden">
               <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -56,11 +99,22 @@ export function IntegrationsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge tone={integration.status === 'Connected' ? 'success' : 'accent'}>
-                    {integration.status}
+                  <Badge tone={status === 'Connected' ? 'success' : 'accent'}>
+                    {status}
                   </Badge>
-                  <Button size="sm" variant={integration.status === 'Connected' ? 'secondary' : 'primary'}>
-                    {integration.status === 'Connected' ? 'Configure' : 'Connect'}
+                  <Button
+                    size="sm"
+                    variant={status === 'Connected' ? 'secondary' : 'primary'}
+                    onClick={() => {
+                      const nextStatus = status === 'Connected' ? 'Available' : 'Connected';
+                      setIntegrationStatus(integration.name, nextStatus);
+                      showToast({
+                        variant: 'success',
+                        message: `${integration.name} ${nextStatus === 'Connected' ? 'connected' : 'disconnected'}.`,
+                      });
+                    }}
+                  >
+                    {status === 'Connected' ? 'Disconnect' : 'Connect'}
                   </Button>
                 </div>
               </CardBody>

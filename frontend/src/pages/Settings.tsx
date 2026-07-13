@@ -3,8 +3,10 @@ import { Settings } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export function SettingsPage() {
+  const navigate = useNavigate();
   const sections = useMemo(
     () => [
       { title: 'Workspace', description: 'Workspace name, branding, and default behavior.' },
@@ -31,7 +33,7 @@ export function SettingsPage() {
               Configure your support platform for enterprise scale, security, and AI-driven workflows.
             </p>
           </div>
-          <Button size="sm" variant="secondary">Review settings</Button>
+          <Button size="sm" variant="secondary" onClick={() => navigate('/profile')}>Review settings</Button>
         </div>
       </div>
 
@@ -46,11 +48,24 @@ export function SettingsPage() {
             </CardHeader>
             <CardBody className="space-y-3">
               <p className="text-sm text-ink-500 dark:text-ink-400">{section.description}</p>
-              <Button size="sm" variant="secondary">Open</Button>
+              <Button size="sm" variant="secondary" onClick={() => navigate(settingsDestination(section.title))}>Open</Button>
             </CardBody>
           </Card>
         ))}
       </div>
     </div>
   );
+}
+
+function settingsDestination(section: string) {
+  const destinations: Record<string, string> = {
+    Workspace: '/profile',
+    SMTP: '/notifications',
+    'Gemini AI': '/assistant',
+    Branding: '/profile',
+    Permissions: '/team',
+    Security: '/profile',
+    'API Keys': '/integrations',
+  };
+  return destinations[section] ?? '/profile';
 }

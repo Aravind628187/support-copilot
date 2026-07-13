@@ -89,3 +89,25 @@ Write the next support reply only.
     throw err;
   }
 }
+
+export async function generateAssistantReply(messages: { role: 'system' | 'user' | 'assistant'; content: string }[]) {
+  if (!client) {
+    throw new AiNotConfiguredError();
+  }
+
+  const formatted = messages
+    .map((m) => `${m.role === 'user' ? 'User' : m.role === 'assistant' ? 'Assistant' : 'System'}: ${m.content}`)
+    .join('\n');
+
+  try {
+    const response = await client.models.generateContent({
+      model: env.GEMINI_MODEL,
+      contents: formatted,
+    });
+
+    return response.text?.trim() ?? '';
+  } catch (err) {
+    logger.error('Gemini chat generate failed', { error: (err as Error).message });
+    throw err;
+  }
+}

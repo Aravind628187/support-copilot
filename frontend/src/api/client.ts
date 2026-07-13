@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import type { ApiErrorShape } from '../types';
 
 // Backend API URL
-const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   'https://support-copilot-m0k5.onrender.com/api';
 

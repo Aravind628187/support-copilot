@@ -50,3 +50,14 @@ export async function verifyEmailHandler(req: Request, res: Response) {
   await authService.verifyEmail(req.body.token);
   res.json({ message: 'Email verified.' });
 }
+
+export async function listSessionsHandler(req: Request, res: Response) {
+  const sessions = await authService.listSessions(req.user!.id);
+  res.json({ sessions });
+}
+
+export async function revokeSessionHandler(req: Request, res: Response) {
+  const { sessionId } = req.params as { sessionId: string };
+  await authService.revokeSession(req.user!.id, sessionId);
+  res.status(204).send();
+}

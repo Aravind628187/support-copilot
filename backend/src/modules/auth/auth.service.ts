@@ -222,3 +222,41 @@ export async function getCurrentUser(userId: string) {
   if (!user) throw ApiError.unauthorized();
   return publicUser(user);
 }
+
+export async function listSessions(userId: string) {
+  const sessions = await prisma.refreshToken.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      createdAt: true,
+      expiresAt: true,
+      revokedAt: true,
+    },
+  });
+
+  return sessions.map((session) => ({
+    id: session.id,
+    createdAt: session.createdAt,
+    expiresAt: session.expiresAt,
+    revokedAt: session.revokedAt,
+    status: session.revokedAt ? 'revoked' : session.expiresAt < new Date() ? 'expired' : 'active',
+  }));
+}
+
+export async function revokeSession(userId: string, sessionId: string) {
+  const session = await prisma.refreshToken.findUnique({ where: { id: sessionId } });
+
+  if (!session || session.userId !== userId) {
+    throw ApiError.notFound('Session not found');
+  }
+
+  if (session.revokedAt) {
+    return;
+  }
+
+  await prisma.refreshToken.update({
+    where: { id: sessionId },
+    data: { revokedAt: new Date() },
+  });
+}

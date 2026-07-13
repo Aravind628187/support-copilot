@@ -9,6 +9,7 @@ import {
   resetPasswordSchema,
   signupSchema,
   verifyEmailSchema,
+  sessionIdParamSchema,
 } from './auth.schema';
 import * as controller from './auth.controller';
 
@@ -23,6 +24,13 @@ router.post(
 );
 router.post('/refresh', asyncHandler(controller.refreshHandler));
 router.post('/logout', asyncHandler(controller.logoutHandler));
+router.get('/sessions', requireAuth(), asyncHandler(controller.listSessionsHandler));
+router.delete(
+  '/sessions/:sessionId',
+  requireAuth(),
+  validate({ params: sessionIdParamSchema }),
+  asyncHandler(controller.revokeSessionHandler),
+);
 router.get('/me', requireAuth(), asyncHandler(controller.meHandler));
 router.post(
   '/forgot-password',

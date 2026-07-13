@@ -31,5 +31,9 @@ export const verifyEmailSchema = z.object({
   token: z.string().min(1),
 });
 
+export const sessionIdParamSchema = z.object({
+  sessionId: z.string().min(1),
+});
+
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

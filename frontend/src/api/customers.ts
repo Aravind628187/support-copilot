@@ -6,6 +6,11 @@ export async function listCustomers(params: { search?: string; page?: number }) 
   return data;
 }
 
+export async function getCustomer(id: string) {
+  const { data } = await api.get<Customer>(`/customers/${id}`);
+  return data;
+}
+
 export async function createCustomer(input: { name: string; email: string; company?: string }) {
   const { data } = await api.post<Customer>('/customers', input);
   return data;

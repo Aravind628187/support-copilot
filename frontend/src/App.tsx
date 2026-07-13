@@ -22,8 +22,21 @@ const TicketsListPage = lazy(() =>
 const TicketDetailPage = lazy(() =>
   import('./pages/tickets/TicketDetail').then((m) => ({ default: m.TicketDetailPage })),
 );
+const CustomersListPage = lazy(() =>
+  import('./pages/customers/CustomersList').then((m) => ({ default: m.CustomersListPage })),
+);
+const CustomerProfilePage = lazy(() =>
+  import('./pages/customers/CustomerProfile').then((m) => ({ default: m.CustomerProfilePage })),
+);
+const AssistantPage = lazy(() => import('./pages/AI').then((m) => ({ default: m.AIPage })));
+const AnalyticsPage = lazy(() => import('./pages/Analytics').then((m) => ({ default: m.AnalyticsPage })));
+const ReportsPage = lazy(() => import('./pages/Reports').then((m) => ({ default: m.ReportsPage })));
+const CalendarPage = lazy(() => import('./pages/Calendar').then((m) => ({ default: m.CalendarPage })));
+const NotificationsPage = lazy(() => import('./pages/Notifications').then((m) => ({ default: m.NotificationsPage })));
+const SettingsPage = lazy(() => import('./pages/Settings').then((m) => ({ default: m.SettingsPage })));
 const KBListPage = lazy(() => import('./pages/kb/KBList').then((m) => ({ default: m.KBListPage })));
 const KBArticlePage = lazy(() => import('./pages/kb/KBArticle').then((m) => ({ default: m.KBArticlePage })));
+const CustomerCreatePage = lazy(() => import('./pages/customers/CustomerCreate').then((m) => ({ default: m.CustomerCreatePage })));
 const TeamPage = lazy(() => import('./pages/Team').then((m) => ({ default: m.TeamPage })));
 const AuditLogPage = lazy(() => import('./pages/AuditLog').then((m) => ({ default: m.AuditLogPage })));
 
@@ -51,8 +64,17 @@ export function App() {
               <Route path="/" element={<DashboardPage />} />
               <Route path="/tickets" element={<TicketsListPage />} />
               <Route path="/tickets/:id" element={<TicketDetailPage />} />
+              <Route path="/customers" element={<CustomersListPage />} />
+              <Route path="/customers/new" element={<CustomerCreatePage />} />
+              <Route path="/customers/:id" element={<CustomerProfilePage />} />
               <Route path="/kb" element={<KBListPage />} />
               <Route path="/kb/:id" element={<KBArticlePage />} />
+              <Route path="/assistant" element={<AssistantPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
 
               <Route element={<RequireAdmin />}>

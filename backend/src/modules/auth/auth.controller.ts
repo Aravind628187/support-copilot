@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { setAuthCookies, clearAuthCookies, clearGoogleOAuthStateCookie, setGoogleOAuthStateCookie } from '../../lib/cookies';
 import { frontendUrl } from '../../config/env';
 import { ApiError } from '../../utils/apiError';
+import { logger } from '../../lib/logger';
 import * as authService from './auth.service';
 
 export async function signupHandler(req: Request, res: Response) {
@@ -64,9 +65,18 @@ export async function googleCallbackHandler(req: Request, res: Response) {
     return;
   }
 
-  const { accessToken, refreshToken } = await authService.loginWithGoogle(req.query.code);
-  setAuthCookies(res, accessToken, refreshToken);
-  redirectToLogin(res, 'success');
+  try {
+    const { accessToken, refreshToken } = await authService.loginWithGoogle(req.query.code);
+    setAuthCookies(res, accessToken, refreshToken);
+    redirectToLogin(res, 'success');
+  } catch (error) {
+    // OAuth uses a top-level browser redirect, so return users to the app
+    // rather than exposing an API error document after they choose an account.
+    logger.error('Google sign-in callback failed', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+    redirectToLogin(res, 'error');
+  }
 }
 
 export async function meHandler(req: Request, res: Response) {

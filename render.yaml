@@ -6,7 +6,10 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npm start
+    # Prisma migrations are idempotent and must run before the new OAuth
+    # database table is queried. This also works on Render's free plan, where
+    # preDeployCommand is unavailable.
+    startCommand: npm run db:migrate:deploy && npm start
     envVars:
       - key: NODE_ENV
         value: production

@@ -27,15 +27,15 @@ export function Topbar({
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-3 border-b border-ink-200/80 bg-white/80 px-4 backdrop-blur dark:border-ink-800 dark:bg-ink-950/85 sm:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-ink-200/80 bg-white/80 px-3 backdrop-blur dark:border-ink-800 dark:bg-ink-950/85 sm:px-5">
       <div className="flex flex-1 items-center gap-3">
         <button
           onClick={onOpenPalette}
-          className="flex h-12 w-full max-w-2xl items-center gap-3 rounded-3xl border border-ink-200/80 bg-ink-50/90 px-4 text-sm text-ink-500 transition hover:border-accent-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/20 dark:border-ink-800 dark:bg-ink-900/75 dark:text-ink-300 dark:hover:border-accent-500/40"
+          className="flex h-10 w-full max-w-2xl items-center gap-3 rounded-3xl border border-ink-200/80 bg-ink-50/90 px-3 text-sm text-ink-500 transition hover:border-accent-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/20 dark:border-ink-800 dark:bg-ink-900/75 dark:text-ink-300 dark:hover:border-accent-500/40"
         >
           <Search className="h-4 w-4" aria-hidden="true" />
           <span className="flex-1 text-left text-sm">Search workflows, tickets, customers, or analytics…</span>
-          <kbd className="rounded-xl border border-ink-200 px-2 py-1 text-[11px] font-medium text-ink-500 dark:border-ink-700 dark:text-ink-400">
+          <kbd className="rounded-xl border border-ink-200 px-2 py-0.5 text-[10px] font-medium text-ink-500 dark:border-ink-700 dark:text-ink-400">
             ⌘K
           </kbd>
         </button>

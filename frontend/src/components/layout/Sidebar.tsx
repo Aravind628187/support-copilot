@@ -44,10 +44,10 @@ export function Sidebar() {
   return (
     <nav
       aria-label="Primary"
-      className="hidden w-80 shrink-0 overflow-y-auto border-r border-ink-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/80 sm:flex"
+      className="hidden w-[270px] shrink-0 overflow-y-auto border-r border-ink-200/80 bg-white/75 p-3 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/80 sm:flex"
     >
-      <div className="sticky top-0 space-y-4 pb-4">
-        <div className="rounded-[28px] border border-ink-100/80 bg-gradient-to-br from-accent-50 to-violet-50 p-4 shadow-sm dark:border-ink-800 dark:from-accent-500/10 dark:to-violet-500/10">
+      <div className="sticky top-0 space-y-3 pb-3">
+        <div className="rounded-[16px] border border-ink-100/80 bg-gradient-to-br from-accent-50 to-violet-50 p-3 shadow-sm dark:border-ink-800 dark:from-accent-500/10 dark:to-violet-500/10">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-600 text-base font-semibold text-white shadow-lg shadow-accent-600/20">
               S
@@ -70,14 +70,14 @@ export function Sidebar() {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-3xl px-4 py-3 text-sm font-semibold transition-all duration-200',
+                  'flex items-center gap-3 rounded-[20px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                   isActive
                     ? 'bg-accent-50 text-accent-700 shadow-sm shadow-accent-200/60 dark:bg-accent-500/10 dark:text-accent-200'
                     : 'text-ink-700 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-900',
                 )
               }
             >
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-3xl bg-ink-100 text-ink-600 dark:bg-ink-900 dark:text-ink-300">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-[20px] bg-ink-100 text-ink-600 dark:bg-ink-900 dark:text-ink-300">
                 <Icon className="h-5 w-5" aria-hidden="true" />
               </span>
               <span>{label}</span>
@@ -85,10 +85,10 @@ export function Sidebar() {
           ))}
         </div>
 
-        <div className="rounded-[28px] border border-ink-100/80 bg-ink-50/80 p-4 dark:border-ink-800 dark:bg-ink-950/60">
+        <div className="rounded-[20px] border border-ink-100/80 bg-ink-50/80 p-3 dark:border-ink-800 dark:bg-ink-950/60">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-500 dark:text-ink-400">Workspace status</p>
-          <div className="mt-3 grid gap-3">
-            <div className="rounded-3xl bg-white/80 p-3 text-sm shadow-sm dark:bg-ink-900/90">
+          <div className="mt-3 grid gap-2.5">
+            <div className="rounded-[20px] bg-white/80 p-3 text-sm shadow-sm dark:bg-ink-900/90">
               <p className="text-2xl font-semibold text-ink-950 dark:text-white">{user?.role === 'ADMIN' ? 'Admin' : 'Agent'}</p>
               <p className="text-xs text-ink-500 dark:text-ink-400">Role</p>
             </div>
@@ -99,8 +99,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <div className="space-y-1 rounded-[28px] border border-ink-100/80 bg-ink-50/80 p-4 dark:border-ink-800 dark:bg-ink-950/60">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-500 dark:text-ink-400">Operations</p>
+        <div className="space-y-1 rounded-[20px] border border-ink-100/80 bg-ink-50/80 p-3 dark:border-ink-800 dark:bg-ink-950/60">
           {secondaryNavItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}

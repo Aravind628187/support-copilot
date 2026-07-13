@@ -25,7 +25,7 @@ export function IntegrationsPage() {
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Integrations" description="Connect your support workspace with enterprise tools." />
-      <div className="rounded-[28px] border border-ink-200/80 bg-gradient-to-br from-accent-600 via-violet-600 to-purple-700 p-6 text-white shadow-[0_30px_80px_-35px_rgba(54,84,209,0.95)] dark:border-ink-800">
+      <div className="rounded-[16px] border border-ink-200/80 bg-gradient-to-br from-accent-600 via-violet-600 to-purple-700 p-5 text-white shadow-[0_24px_72px_-30px_rgba(54,84,209,0.85)] dark:border-ink-800">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-2">
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-accent-100">Integrations</p>
@@ -47,7 +47,7 @@ export function IntegrationsPage() {
             <Card key={integration.name} className="overflow-hidden">
               <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-ink-100 text-ink-700 dark:bg-ink-900 dark:text-ink-100">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink-100 text-ink-700 dark:bg-ink-900 dark:text-ink-100">
                     <Icon className="h-6 w-6" />
                   </div>
                   <div>

@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <footer className="mt-12 rounded-[32px] border border-ink-200/70 bg-gradient-to-br from-white/90 via-white/80 to-ink-50/80 p-6 text-sm text-ink-600 shadow-lg shadow-ink-200/40 backdrop-blur dark:border-ink-800 dark:from-ink-950/85 dark:via-ink-950 dark:to-ink-900 dark:text-ink-400">
-      <div className="grid gap-5 sm:grid-cols-[1.5fr_2fr] lg:grid-cols-[1.2fr_1fr_1fr]">
+    <footer className="mt-8 rounded-[16px] border border-ink-200/70 bg-gradient-to-br from-white/90 via-white/80 to-ink-50/80 p-4 text-xs text-ink-600 shadow-[0_12px_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur dark:border-ink-800 dark:from-ink-950/85 dark:via-ink-950 dark:to-ink-900 dark:text-ink-400">
+      <div className="grid gap-4 sm:grid-cols-[1.5fr_2fr] lg:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <p className="text-sm font-semibold text-ink-950 dark:text-white">SupportCopilot</p>
           <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">

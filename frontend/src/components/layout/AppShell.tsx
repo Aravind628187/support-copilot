@@ -28,12 +28,12 @@ export function AppShell() {
       <Sidebar />
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <Topbar onOpenPalette={() => setPaletteOpen(true)} theme={theme} onToggleTheme={toggle} />
-        <main className="flex-1 overflow-y-auto pb-24 sm:pb-0">
-          <div className="relative mx-auto w-full max-w-shell p-4 sm:p-6 lg:p-8">
-            <div className="rounded-[32px] border border-white/80 bg-white/90 shadow-[0_40px_120px_-50px_rgba(15,23,42,0.18)] backdrop-blur dark:border-white/10 dark:bg-ink-950/80 dark:shadow-[0_40px_120px_-50px_rgba(0,0,0,0.55)]">
-              <div className="relative overflow-hidden rounded-[32px]">
+        <main className="flex-1 overflow-y-auto pb-20 sm:pb-0">
+          <div className="relative mx-auto w-full max-w-shell p-3 sm:p-4 lg:p-6">
+            <div className="rounded-[16px] border border-white/80 bg-white/90 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.14)] backdrop-blur dark:border-white/10 dark:bg-ink-950/80 dark:shadow-[0_24px_80px_-40px_rgba(0,0,0,0.45)]">
+              <div className="relative overflow-hidden rounded-[16px]">
                 <div className="absolute inset-0 bg-[linear-gradient(135deg,_rgba(59,130,246,0.05)_0%,_rgba(236,72,153,0.04)_40%,_rgba(79,70,229,0.04)_100%)]" />
-                <div className="relative p-6 sm:p-8 lg:p-10">
+                <div className="relative p-4 sm:p-5 lg:p-6">
                   <Outlet />
                   <Footer />
                 </div>

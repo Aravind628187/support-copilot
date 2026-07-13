@@ -75,20 +75,20 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <Seo title="Dashboard" description="Customer support operations dashboard for enterprise teams." />
 
-      <div className="rounded-[32px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-violet-950 p-8 text-white shadow-[0_40px_120px_-50px_rgba(15,23,42,0.65)]">
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.32em] text-white/70">
+      <div className="rounded-[16px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-violet-950 p-6 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.55)]">
+        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.32em] text-white/70">
               <Sparkles className="h-4 w-4 text-accent-300" />
               Enterprise operations
             </div>
             <div className="space-y-3">
-              <p className="text-sm uppercase tracking-[0.28em] text-accent-200">Support overview</p>
-              <h1 className="text-4xl font-semibold tracking-tight text-white">Keep support performance ahead of customer demand</h1>
-              <p className="max-w-2xl text-sm leading-7 text-white/80">
+              <p className="text-xs uppercase tracking-[0.28em] text-accent-200">Support overview</p>
+              <h1 className="text-3xl font-semibold tracking-tight text-white">Keep support performance ahead of customer demand</h1>
+              <p className="max-w-2xl text-sm leading-6 text-white/80">
                 Monitor ticket flow, SLA health, agent capacity, and AI adoption in a single executive dashboard.
               </p>
             </div>
@@ -98,7 +98,7 @@ export function DashboardPage() {
             {HEALTH_METRICS.map((metric) => {
               const Icon = metric.icon;
               return (
-                <div key={metric.label} className="rounded-[28px] border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <div key={metric.label} className="rounded-[20px] border border-white/15 bg-white/10 p-3 backdrop-blur">
                   <div className="flex items-start gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-white/10 text-white/90">
                       <Icon className="h-5 w-5" />
@@ -119,20 +119,20 @@ export function DashboardPage() {
         <DashboardSkeleton />
       ) : (
         <>
-          <div className="grid gap-4 xl:grid-cols-3">
+          <div className="grid gap-3 xl:grid-cols-3">
             <MetricCard icon={<Inbox className="h-5 w-5" />} label="Total tickets" value={formatCompactNumber(summary.totalTickets)} />
             <MetricCard icon={<ShieldCheck className="h-5 w-5" />} label="SLA compliance" value={`${summary.slaCompliance}%`} />
             <MetricCard icon={<Clock3 className="h-5 w-5" />} label="Avg resolution" value={formatHours(data.avgResolutionHours)} />
           </div>
 
-          <div className="grid gap-4 xl:grid-cols-4">
+          <div className="grid gap-3 xl:grid-cols-4">
             <MiniMetric label="Open" value={summary.openTickets} tone="accent" />
             <MiniMetric label="Pending" value={summary.pendingTickets} tone="warning" />
             <MiniMetric label="Resolved" value={summary.resolvedTickets} tone="success" />
             <MiniMetric label="Critical" value={summary.criticalTickets} tone="danger" />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+          <div className="grid gap-3 lg:grid-cols-[1.4fr_0.6fr]">
             <Card>
               <CardHeader>
                 <div>
@@ -140,8 +140,8 @@ export function DashboardPage() {
                   <p className="text-sm text-ink-500 dark:text-ink-400">Created tickets over the last 14 days.</p>
                 </div>
               </CardHeader>
-              <CardBody>
-                <ResponsiveContainer width="100%" height={260}>
+              <CardBody className="pb-1">
+                <ResponsiveContainer width="100%" height={220}>
                   <AreaChart data={data.ticketsOverTime} margin={{ left: -16, right: 0, top: 12, bottom: 0 }}>
                     <defs>
                       <linearGradient id="dashboardGradient" x1="0" y1="0" x2="0" y2="1">
@@ -195,7 +195,7 @@ export function DashboardPage() {
             </Card>
           </div>
 
-          <div className="grid gap-4 xl:grid-cols-[0.9fr_0.7fr]">
+          <div className="grid gap-3 xl:grid-cols-[0.9fr_0.7fr]">
             <Card>
               <CardHeader>
                 <div>
@@ -203,7 +203,7 @@ export function DashboardPage() {
                   <p className="text-sm text-ink-500 dark:text-ink-400">Where support effort is focused today.</p>
                 </div>
               </CardHeader>
-              <CardBody className="h-[320px]">
+              <CardBody className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -273,7 +273,7 @@ export function DashboardPage() {
 function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <Card>
-      <CardBody className="space-y-3">
+      <CardBody className="space-y-2 min-h-[140px]">
         <div className="flex items-center justify-between gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-accent-50 text-accent-700 dark:bg-accent-500/10 dark:text-accent-300">
             {icon}
@@ -294,7 +294,7 @@ function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; va
 function MiniMetric({ label, value, tone }: { label: string; value: number; tone: 'accent' | 'warning' | 'success' | 'danger' }) {
   return (
     <Card>
-      <CardBody className="space-y-3">
+      <CardBody className="space-y-2 min-h-[130px]">
         <p className="text-xs uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">{label}</p>
         <p className="text-2xl font-semibold text-ink-950 dark:text-ink-100">{value}</p>
         <div className={`h-1 rounded-full ${MINI_TONE_CLASSES[tone]}`} />
@@ -305,7 +305,7 @@ function MiniMetric({ label, value, tone }: { label: string; value: number; tone
 
 function StatusTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
+    <div className="flex items-center justify-between rounded-2xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-ink-100 text-ink-700 dark:bg-ink-900 dark:text-ink-100">{icon}</div>
         <div>
@@ -341,17 +341,17 @@ function ActivityPanel({ title, items }: { title: string; items: { title: string
 
 function DashboardSkeleton() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="flex flex-col gap-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <DashboardCardSkeleton />
         <DashboardCardSkeleton />
         <DashboardCardSkeleton />
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="h-80 animate-pulse rounded-[32px] bg-ink-100 dark:bg-ink-800" />
-        <div className="grid gap-4">
-          <div className="h-40 animate-pulse rounded-[32px] bg-ink-100 dark:bg-ink-800" />
-          <div className="h-40 animate-pulse rounded-[32px] bg-ink-100 dark:bg-ink-800" />
+      <div className="grid gap-3 lg:grid-cols-2">
+        <div className="h-72 animate-pulse rounded-[24px] bg-ink-100 dark:bg-ink-800" />
+        <div className="grid gap-3">
+          <div className="h-36 animate-pulse rounded-[24px] bg-ink-100 dark:bg-ink-800" />
+          <div className="h-36 animate-pulse rounded-[24px] bg-ink-100 dark:bg-ink-800" />
         </div>
       </div>
     </div>

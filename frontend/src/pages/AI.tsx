@@ -9,18 +9,18 @@ export function AIPage() {
     <div className="flex flex-col gap-6">
       <Seo title="AI Assistant" description="AI-powered support drafting, knowledge recommendations, and productivity insights." />
 
-      <div className="rounded-[32px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-accent-700 p-8 text-white shadow-[0_30px_80px_-35px_rgba(2,6,23,0.95)]">
-        <div className="grid gap-6 lg:grid-cols-[1.5fr_0.8fr] lg:items-end">
-          <div className="space-y-4">
-            <p className="text-sm uppercase tracking-[0.3em] text-accent-200">AI command center</p>
-            <h1 className="text-4xl font-semibold tracking-tight">AI that makes every support interaction smarter</h1>
-            <p className="max-w-2xl text-sm leading-7 text-white/80">
+      <div className="rounded-[16px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-accent-700 p-6 text-white shadow-[0_24px_72px_-32px_rgba(2,6,23,0.78)]">
+        <div className="grid gap-4 lg:grid-cols-[1.5fr_0.8fr] lg:items-end">
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.3em] text-accent-200">AI command center</p>
+            <h1 className="text-3xl font-semibold tracking-tight">AI that makes every support interaction smarter</h1>
+            <p className="max-w-2xl text-sm leading-6 text-white/80">
               Generate responses, summarize conversations, and surface knowledge suggestions across your support queue with enterprise-grade accuracy.
             </p>
           </div>
-          <div className="rounded-[28px] border border-white/15 bg-white/10 p-5 backdrop-blur">
+          <div className="rounded-[16px] border border-white/15 bg-white/10 p-4 backdrop-blur">
             <p className="text-xs uppercase tracking-[0.28em] text-white/60">AI performance</p>
-            <p className="mt-4 text-3xl font-semibold text-white">78% draft adoption</p>
+            <p className="mt-3 text-2xl font-semibold text-white">78% draft adoption</p>
             <p className="mt-2 text-sm text-white/70">Average time saved per conversation across the last 30 days.</p>
           </div>
         </div>

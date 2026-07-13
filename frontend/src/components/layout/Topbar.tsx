@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, Moon, Sun, LogOut, ChevronDown, Bell, UserRound } from 'lucide-react';
+import { Search, Moon, Sun, LogOut, ChevronDown, Bell, UserRound, Command } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { initials } from '../../lib/utils';
@@ -27,16 +27,16 @@ export function Topbar({
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-ink-200/80 bg-white/80 px-3 backdrop-blur dark:border-ink-800 dark:bg-ink-950/85 sm:px-5">
+    <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between gap-3 border-b border-ink-200/70 bg-white/75 px-3 backdrop-blur-xl dark:border-ink-800/80 dark:bg-[#080b13]/85 sm:px-5 lg:px-6">
       <div className="flex flex-1 items-center gap-3">
         <button
           onClick={onOpenPalette}
-          className="flex h-10 w-full max-w-2xl items-center gap-3 rounded-3xl border border-ink-200/80 bg-ink-50/90 px-3 text-sm text-ink-500 transition hover:border-accent-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/20 dark:border-ink-800 dark:bg-ink-900/75 dark:text-ink-300 dark:hover:border-accent-500/40"
+          className="flex h-11 w-full max-w-2xl items-center gap-3 rounded-2xl border border-ink-200/80 bg-ink-50/90 px-4 text-sm text-ink-500 transition hover:border-accent-300 hover:bg-white hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/20 dark:border-ink-800 dark:bg-ink-900/75 dark:text-ink-300 dark:hover:border-accent-500/40"
         >
-          <Search className="h-4 w-4" aria-hidden="true" />
+          <Search className="h-[18px] w-[18px]" aria-hidden="true" />
           <span className="flex-1 text-left text-sm">Search workflows, tickets, customers, or analytics…</span>
-          <kbd className="rounded-xl border border-ink-200 px-2 py-0.5 text-[10px] font-medium text-ink-500 dark:border-ink-700 dark:text-ink-400">
-            ⌘K
+          <kbd className="hidden items-center gap-1 rounded-lg border border-ink-200 bg-white px-2 py-1 font-mono text-[10px] font-medium text-ink-500 sm:inline-flex dark:border-ink-700 dark:bg-ink-950 dark:text-ink-400">
+            <Command className="h-3 w-3" /> K
           </kbd>
         </button>
       </div>

@@ -44,12 +44,13 @@ export function Sidebar() {
   return (
     <nav
       aria-label="Primary"
-      className="hidden w-[270px] shrink-0 overflow-y-auto border-r border-ink-200/80 bg-white/75 p-3 backdrop-blur-xl dark:border-ink-800 dark:bg-ink-950/80 sm:flex"
+      className="hidden w-[280px] shrink-0 overflow-y-auto border-r border-ink-200/70 bg-white/65 p-3 backdrop-blur-xl dark:border-ink-800/80 dark:bg-[#080b13]/80 sm:flex"
     >
       <div className="sticky top-0 space-y-3 pb-3">
-        <div className="rounded-[16px] border border-ink-100/80 bg-gradient-to-br from-accent-50 to-violet-50 p-3 shadow-sm dark:border-ink-800 dark:from-accent-500/10 dark:to-violet-500/10">
+        <div className="relative overflow-hidden rounded-[20px] border border-ink-100/80 bg-gradient-to-br from-accent-50 via-white to-violet-50 p-4 shadow-sm dark:border-ink-800 dark:from-accent-500/15 dark:via-ink-900 dark:to-violet-500/15">
+          <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-accent-400/20 blur-2xl" />
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-600 text-base font-semibold text-white shadow-lg shadow-accent-600/20">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-500 to-ai-600 text-base font-semibold text-white shadow-lg shadow-accent-600/25">
               S
             </div>
             <div>
@@ -57,7 +58,7 @@ export function Sidebar() {
               <p className="text-xs uppercase tracking-[0.3em] text-ink-500 dark:text-ink-400">Enterprise HQ</p>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-ink-600 dark:text-ink-400">
+          <p className="relative mt-4 text-sm leading-6 text-ink-600 dark:text-ink-400">
             A unified operations console for your customer support intelligence.
           </p>
         </div>

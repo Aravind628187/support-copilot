@@ -75,20 +75,22 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="dashboard-enter flex flex-col gap-5">
       <Seo title="Dashboard" description="Customer support operations dashboard for enterprise teams." />
 
-      <div className="rounded-[16px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-violet-950 p-6 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.55)]">
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
-          <div className="space-y-3">
+      <div className="relative isolate overflow-hidden rounded-[22px] border border-white/20 bg-gradient-to-br from-[#0b1325] via-[#14234a] to-[#4338ca] p-6 text-white shadow-[0_28px_84px_-38px_rgba(30,64,175,0.72)] sm:p-7">
+        <div className="dashboard-glow pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-sky-400/25 blur-3xl" />
+        <div className="dashboard-glow pointer-events-none absolute -right-10 -bottom-16 h-60 w-60 rounded-full bg-violet-300/25 blur-3xl [animation-delay:-3s]" />
+        <div className="relative grid gap-5 lg:grid-cols-[1.4fr_0.8fr] lg:items-end">
+          <div className="space-y-4">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.32em] text-white/70">
               <Sparkles className="h-4 w-4 text-accent-300" />
               Enterprise operations
             </div>
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.28em] text-accent-200">Support overview</p>
-              <h1 className="text-3xl font-semibold tracking-tight text-white">Keep support performance ahead of customer demand</h1>
-              <p className="max-w-2xl text-sm leading-6 text-white/80">
+              <p className="text-xs uppercase tracking-[0.28em] text-sky-100/80">Support overview</p>
+              <h1 className="max-w-3xl text-3xl font-semibold tracking-[-0.035em] text-white sm:text-4xl">Keep support performance ahead of customer demand</h1>
+              <p className="max-w-2xl text-sm leading-6 text-white/75 sm:text-[15px]">
                 Monitor ticket flow, SLA health, agent capacity, and AI adoption in a single executive dashboard.
               </p>
             </div>
@@ -98,13 +100,13 @@ export function DashboardPage() {
             {HEALTH_METRICS.map((metric) => {
               const Icon = metric.icon;
               return (
-                <div key={metric.label} className="rounded-[20px] border border-white/15 bg-white/10 p-3 backdrop-blur">
+              <div key={metric.label} className="rounded-[18px] border border-white/15 bg-white/10 p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:bg-white/[0.14]">
                   <div className="flex items-start gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-white/10 text-white/90">
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs uppercase tracking-[0.24em] text-white/60">{metric.label}</p>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-white/60">{metric.label}</p>
                       <p className="text-lg font-semibold text-white">{metric.value}</p>
                     </div>
                   </div>
@@ -119,7 +121,7 @@ export function DashboardPage() {
         <DashboardSkeleton />
       ) : (
         <>
-          <div className="grid gap-3 xl:grid-cols-3">
+          <div className="grid gap-3 xl:grid-cols-3 [animation-delay:80ms]">
             <MetricCard icon={<Inbox className="h-5 w-5" />} label="Total tickets" value={formatCompactNumber(summary.totalTickets)} />
             <MetricCard icon={<ShieldCheck className="h-5 w-5" />} label="SLA compliance" value={`${summary.slaCompliance}%`} />
             <MetricCard icon={<Clock3 className="h-5 w-5" />} label="Avg resolution" value={formatHours(data.avgResolutionHours)} />
@@ -176,11 +178,11 @@ export function DashboardPage() {
                 </div>
               </CardHeader>
               <CardBody className="space-y-4">
-                <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
+                <div className="rounded-[18px] border border-ink-100 bg-gradient-to-br from-accent-50/70 to-white p-4 dark:border-ink-800 dark:from-accent-500/10 dark:to-ink-950/50">
                   <p className="text-xs uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">AI drafts used</p>
                   <p className="mt-2 text-3xl font-semibold text-ink-950 dark:text-ink-100">{summary.draftAssist}%</p>
                   <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
-                    <div className="h-full rounded-full bg-accent-600" style={{ width: `${summary.draftAssist}%` }} />
+                    <div className="h-full rounded-full bg-gradient-to-r from-accent-500 to-ai-500 shadow-[0_0_14px_rgba(91,114,245,0.55)] transition-all duration-700" style={{ width: `${summary.draftAssist}%` }} />
                   </div>
                 </div>
                 <div className="space-y-3 rounded-3xl border border-ink-100 bg-white/90 p-4 text-sm dark:border-ink-800 dark:bg-ink-900/80">
@@ -273,12 +275,13 @@ export function DashboardPage() {
 function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <Card>
-      <CardBody className="space-y-2 min-h-[140px]">
+      <CardBody className="space-y-3 min-h-[148px]">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-accent-50 text-accent-700 dark:bg-accent-500/10 dark:text-accent-300">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-50 to-ai-50 text-accent-700 shadow-sm dark:from-accent-500/15 dark:to-ai-500/10 dark:text-accent-300">
             {icon}
           </div>
-          <span className="rounded-full bg-ink-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-ink-500 dark:bg-ink-800 dark:text-ink-400">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-success-600 dark:bg-success-500/10 dark:text-success-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-success-500" />
             Live
           </span>
         </div>
@@ -294,10 +297,12 @@ function MetricCard({ icon, label, value }: { icon: ReactNode; label: string; va
 function MiniMetric({ label, value, tone }: { label: string; value: number; tone: 'accent' | 'warning' | 'success' | 'danger' }) {
   return (
     <Card>
-      <CardBody className="space-y-2 min-h-[130px]">
+      <CardBody className="space-y-2 min-h-[124px]">
         <p className="text-xs uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">{label}</p>
         <p className="text-2xl font-semibold text-ink-950 dark:text-ink-100">{value}</p>
-        <div className={`h-1 rounded-full ${MINI_TONE_CLASSES[tone]}`} />
+        <div className="h-1.5 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+          <div className={`h-full w-3/4 rounded-full ${MINI_TONE_CLASSES[tone]}`} />
+        </div>
       </CardBody>
     </Card>
   );
@@ -305,9 +310,9 @@ function MiniMetric({ label, value, tone }: { label: string; value: number; tone
 
 function StatusTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
+    <div className="flex items-center justify-between rounded-[18px] border border-ink-100 bg-ink-50/70 p-4 transition hover:border-accent-200 dark:border-ink-800 dark:bg-ink-950/50 dark:hover:border-accent-500/30">
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-3xl bg-ink-100 text-ink-700 dark:bg-ink-900 dark:text-ink-100">{icon}</div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ink-100 text-accent-600 dark:bg-ink-900 dark:text-accent-300">{icon}</div>
         <div>
           <p className="text-sm font-semibold text-ink-950 dark:text-ink-100">{label}</p>
           <p className="text-sm text-ink-500 dark:text-ink-400">Realtime</p>

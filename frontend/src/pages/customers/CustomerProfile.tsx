@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, FileText, MessageSquare } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ShieldCheck } from 'lucide-react';
 import { getCustomer } from '../../api/customers';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Seo } from '../../components/Seo';
+import { Badge } from '../../components/ui/Badge';
 import { formatDateTime } from '../../lib/utils';
 
 export function CustomerProfilePage() {
@@ -40,7 +41,7 @@ export function CustomerProfilePage() {
           <p className="text-sm font-medium uppercase tracking-[0.28em] text-accent-500">Customer profile</p>
           <h1 className="text-3xl font-semibold">{customer?.name ?? 'Customer'}</h1>
           <p className="max-w-2xl text-sm text-ink-500 dark:text-ink-400">
-            Review customer history, satisfaction metrics, and support account details.
+            Review account details, ticket health, and AI insights for this customer.
           </p>
         </div>
         <Button size="sm" variant="secondary" onClick={() => navigate('/customers')}>
@@ -54,48 +55,41 @@ export function CustomerProfilePage() {
             <CardHeader>
               <div>
                 <h2 className="text-sm font-semibold">Profile overview</h2>
-                <p className="text-sm text-ink-500 dark:text-ink-400">Customer identity and workspace information.</p>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Customer identity and account details.</p>
               </div>
             </CardHeader>
             <CardBody className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Name</p>
-                <p className="mt-2 text-sm font-semibold text-ink-950 dark:text-ink-100">{customer?.name}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Email</p>
-                <p className="mt-2 text-sm font-semibold text-ink-950 dark:text-ink-100">{customer?.email}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Company</p>
-                <p className="mt-2 text-sm font-semibold text-ink-950 dark:text-ink-100">{company}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Joined</p>
-                <p className="mt-2 text-sm font-semibold text-ink-950 dark:text-ink-100">
-                  {customer ? formatDateTime(customer.createdAt) : '—'}
-                </p>
-              </div>
+              <ProfileField label="Name" value={customer?.name ?? '—'} />
+              <ProfileField label="Email" value={customer?.email ?? '—'} />
+              <ProfileField label="Company" value={company} />
+              <ProfileField label="Joined" value={customer ? formatDateTime(customer.createdAt) : '—'} />
             </CardBody>
           </Card>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <StatusCard label="Satisfaction" value="92%" relation="Last 30 days" />
+            <StatusCard label="Avg. response" value="2.4h" relation="Across support" />
+          </div>
 
           <Card>
             <CardHeader>
               <div>
-                <h2 className="text-sm font-semibold">Activity summary</h2>
-                <p className="text-sm text-ink-500 dark:text-ink-400">Customer satisfaction, recent actions, and ticket health.</p>
+                <h2 className="text-sm font-semibold">Support health</h2>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Signals that help you prioritize this customer.</p>
               </div>
             </CardHeader>
-            <CardBody className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Satisfaction</p>
-                <p className="mt-2 text-3xl font-semibold text-ink-950 dark:text-ink-100">92%</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400">Last 30 days</p>
+            <CardBody className="space-y-3">
+              <div className="grid gap-3 rounded-[28px] border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
+                <div className="flex items-center gap-2 text-sm font-semibold text-ink-950 dark:text-ink-100">
+                  <MessageSquare className="h-4 w-4 text-accent-600" /> Recent ticket activity
+                </div>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Last response was 2 hours ago. One high-priority issue remains open.</p>
               </div>
-              <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
-                <p className="text-xs uppercase tracking-[0.24em] text-ink-400">Response time</p>
-                <p className="mt-2 text-3xl font-semibold text-ink-950 dark:text-ink-100">2.4h</p>
-                <p className="text-xs text-ink-500 dark:text-ink-400">Average across support</p>
+              <div className="grid gap-3 rounded-[28px] border border-ink-100 bg-white/90 p-4 dark:border-ink-800 dark:bg-ink-900/80">
+                <div className="flex items-center gap-2 text-sm font-semibold text-ink-950 dark:text-ink-100">
+                  <ShieldCheck className="h-4 w-4 text-accent-600" /> Risk level
+                </div>
+                <p className="text-sm text-ink-500 dark:text-ink-400">High priority account. Recommended follow-up from senior support.</p>
               </div>
             </CardBody>
           </Card>
@@ -105,44 +99,91 @@ export function CustomerProfilePage() {
           <Card>
             <CardHeader>
               <div>
-                <h2 className="text-sm font-semibold">Support signals</h2>
-                <p className="text-sm text-ink-500 dark:text-ink-400">Actionable notes and relevant knowledge suggestions.</p>
+                <h2 className="text-sm font-semibold">Account summary</h2>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Key customer metrics and service status.</p>
               </div>
             </CardHeader>
-            <CardBody className="space-y-3">
-              <div className="grid gap-3">
-                <div className="rounded-3xl border border-ink-100 bg-white/90 p-4 dark:border-ink-800 dark:bg-ink-900/80">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-ink-950 dark:text-ink-100">
-                    <MessageSquare className="h-4 w-4 text-accent-600" /> Recent ticket activity
-                  </div>
-                  <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">Customer last messaged 2 hours ago via email.</p>
-                </div>
-                <div className="rounded-3xl border border-ink-100 bg-white/90 p-4 dark:border-ink-800 dark:bg-ink-900/80">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-ink-950 dark:text-ink-100">
-                    <FileText className="h-4 w-4 text-accent-600" /> Knowledge suggestions
-                  </div>
-                  <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">AI recommends 3 help articles relevant to this customer's current issue.</p>
-                </div>
-              </div>
+            <CardBody className="space-y-4">
+              <DetailRow label="Segment" value={customer?.company ? 'Enterprise' : 'Standard'} />
+              <DetailRow label="Support plan" value="Premium" />
+              <DetailRow label="Open tickets" value="2" />
+              <DetailRow label="CSAT" value="92%" />
             </CardBody>
           </Card>
 
           <Card>
             <CardHeader>
               <div>
-                <h2 className="text-sm font-semibold">Internal notes</h2>
-                <p className="text-sm text-ink-500 dark:text-ink-400">Keep private context and escalation guidance here.</p>
+                <h2 className="text-sm font-semibold">Recommended actions</h2>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Next best steps for this customer.</p>
               </div>
             </CardHeader>
             <CardBody className="space-y-3">
-              <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
-                <p className="text-sm text-ink-600 dark:text-ink-400">No notes yet. Add private notes to keep teammates aligned.</p>
+              <ActionItem label="Follow up on open escalations" tone="warning" />
+              <ActionItem label="Recommend knowledge base article" tone="accent" />
+              <ActionItem label="Schedule account review" tone="success" />
+            </CardBody>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold">Private notes</h2>
+                  <p className="text-sm text-ink-500 dark:text-ink-400">Context only visible to support teammates.</p>
+                </div>
+                <Badge tone="accent">Draft</Badge>
               </div>
-              <Button size="sm" variant="secondary">Add note</Button>
+            </CardHeader>
+            <CardBody className="space-y-3">
+              <div className="rounded-3xl border border-ink-100 bg-ink-50 p-4 text-sm text-ink-600 dark:border-ink-800 dark:bg-ink-950/50 dark:text-ink-400">
+                Add notes to capture special instructions or escalation history for this customer.
+              </div>
+              <Button size="sm" variant="secondary">
+                Add note
+              </Button>
             </CardBody>
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ProfileField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-[0.24em] text-ink-400">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-ink-950 dark:text-ink-100">{value}</p>
+    </div>
+  );
+}
+
+function StatusCard({ label, value, relation }: { label: string; value: string; relation: string }) {
+  return (
+    <Card>
+      <CardBody className="space-y-2">
+        <p className="text-xs uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">{label}</p>
+        <p className="text-3xl font-semibold text-ink-950 dark:text-ink-100">{value}</p>
+        <p className="text-sm text-ink-500 dark:text-ink-400">{relation}</p>
+      </CardBody>
+    </Card>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between rounded-3xl border border-ink-100 bg-ink-50 p-4 dark:border-ink-800 dark:bg-ink-950/50">
+      <span className="text-sm text-ink-500 dark:text-ink-400">{label}</span>
+      <span className="text-sm font-semibold text-ink-950 dark:text-ink-100">{value}</span>
+    </div>
+  );
+}
+
+function ActionItem({ label, tone }: { label: string; tone: 'accent' | 'warning' | 'success' }) {
+  return (
+    <div className={`rounded-3xl border border-ink-100 p-4 text-sm dark:border-ink-800 dark:bg-ink-950/50 ${tone === 'warning' ? 'bg-warning-50/70 text-warning-700 dark:bg-warning-500/10 dark:text-warning-200' : tone === 'success' ? 'bg-success-50/70 text-success-700 dark:bg-success-500/10 dark:text-success-200' : 'bg-accent-50/70 text-accent-700 dark:bg-accent-500/10 dark:text-accent-200'}`}>
+      {label}
     </div>
   );
 }

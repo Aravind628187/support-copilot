@@ -1,39 +1,76 @@
-import { Sparkles, MessageCircle, Cpu } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Sparkles, MessageCircle, Cpu, Zap, ShieldCheck } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 
 export function AIPage() {
-
   return (
     <div className="flex flex-col gap-6">
-      <Seo title="AI Assistant" description="AI-powered support drafting and knowledge recommendations." />
-      <div className="rounded-3xl border border-ink-100 bg-gradient-to-br from-ink-950 via-ink-900 to-accent-700 p-6 text-white shadow-[0_30px_80px_-35px_rgba(2,6,23,0.95)]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.28em] text-accent-200">AI assistant</p>
-            <h1 className="text-3xl font-semibold">Support intelligence, in-context.</h1>
-            <p className="mt-2 max-w-2xl text-sm text-white/80">
-              Generate replies, summarize conversations, and surface knowledge without leaving your workflow.
+      <Seo title="AI Assistant" description="AI-powered support drafting, knowledge recommendations, and productivity insights." />
+
+      <div className="rounded-[32px] border border-white/20 bg-gradient-to-br from-ink-950 via-ink-900 to-accent-700 p-8 text-white shadow-[0_30px_80px_-35px_rgba(2,6,23,0.95)]">
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_0.8fr] lg:items-end">
+          <div className="space-y-4">
+            <p className="text-sm uppercase tracking-[0.3em] text-accent-200">AI command center</p>
+            <h1 className="text-4xl font-semibold tracking-tight">AI that makes every support interaction smarter</h1>
+            <p className="max-w-2xl text-sm leading-7 text-white/80">
+              Generate responses, summarize conversations, and surface knowledge suggestions across your support queue with enterprise-grade accuracy.
             </p>
           </div>
-          <Button size="sm" variant="secondary">Configure Gemini</Button>
+          <div className="rounded-[28px] border border-white/15 bg-white/10 p-5 backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.28em] text-white/60">AI performance</p>
+            <p className="mt-4 text-3xl font-semibold text-white">78% draft adoption</p>
+            <p className="mt-2 text-sm text-white/70">Average time saved per conversation across the last 30 days.</p>
+          </div>
         </div>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-4">
+        <FeatureCard
+          icon={<Sparkles className="h-5 w-5 text-accent-600" />}
+          title="Draft replies"
+          description="Create polished support responses from any ticket thread in seconds."
+          cta="Open assistant"
+        />
+        <FeatureCard
+          icon={<MessageCircle className="h-5 w-5 text-accent-600" />}
+          title="Knowledge suggestions"
+          description="Surface relevant help articles and reduce manual lookup time."
+          cta="View suggestions"
+          secondary
+        />
+        <FeatureCard
+          icon={<Cpu className="h-5 w-5 text-accent-600" />}
+          title="Usage analytics"
+          description="Track AI adoption, top users, and performance impact across teams."
+          cta="Review usage"
+          secondary
+        />
+        <FeatureCard
+          icon={<Zap className="h-5 w-5 text-accent-600" />}
+          title="Automations"
+          description="Trigger AI workflows on recurring ticket types and reduce repetitive work."
+          cta="Configure flows"
+          secondary
+        />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-accent-600" />
-              <h2 className="text-sm font-semibold">Draft replies</h2>
+              <ShieldCheck className="h-4 w-4 text-accent-600" />
+              <h2 className="text-sm font-semibold">Compliance-ready AI</h2>
             </div>
           </CardHeader>
           <CardBody className="space-y-3">
             <p className="text-sm text-ink-500 dark:text-ink-400">
-              Generate polished support responses instantly from any ticket thread.
+              Control how AI drafts are stored, reviewed, and published across your support organization.
             </p>
-            <Button size="sm">Open assistant</Button>
+            <Button size="sm" variant="secondary">
+              Review policies
+            </Button>
           </CardBody>
         </Card>
 
@@ -41,14 +78,16 @@ export function AIPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4 text-accent-600" />
-              <h2 className="text-sm font-semibold">Knowledge suggestions</h2>
+              <h2 className="text-sm font-semibold">Knowledge pulse</h2>
             </div>
           </CardHeader>
           <CardBody className="space-y-3">
             <p className="text-sm text-ink-500 dark:text-ink-400">
-              Surface relevant help articles to reduce resolution time and improve consistency.
+              AI recommendations are aligned with your internal knowledge base and latest product updates.
             </p>
-            <Button size="sm" variant="secondary">View suggestions</Button>
+            <Button size="sm" variant="secondary">
+              Sync knowledge
+            </Button>
           </CardBody>
         </Card>
 
@@ -56,17 +95,50 @@ export function AIPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Cpu className="h-4 w-4 text-accent-600" />
-              <h2 className="text-sm font-semibold">Usage analytics</h2>
+              <h2 className="text-sm font-semibold">Performance insights</h2>
             </div>
           </CardHeader>
           <CardBody className="space-y-3">
             <p className="text-sm text-ink-500 dark:text-ink-400">
-              Track how AI is helping your team and where to optimize across workflows.
+              Identify the workflows where AI delivers the greatest time savings and consistency gains.
             </p>
-            <Button size="sm" variant="secondary">Review usage</Button>
+            <Button size="sm" variant="secondary">
+              View insights
+            </Button>
           </CardBody>
         </Card>
       </div>
     </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+  cta,
+  secondary,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  cta: string;
+  secondary?: boolean;
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2">{icon}</div>
+      </CardHeader>
+      <CardBody className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-ink-950 dark:text-ink-100">{title}</h3>
+          <p className="mt-2 text-sm text-ink-600 dark:text-ink-400">{description}</p>
+        </div>
+        <Button size="sm" variant={secondary ? 'secondary' : 'primary'}>
+          {cta}
+        </Button>
+      </CardBody>
+    </Card>
   );
 }

@@ -34,6 +34,7 @@ const ReportsPage = lazy(() => import('./pages/Reports').then((m) => ({ default:
 const CalendarPage = lazy(() => import('./pages/Calendar').then((m) => ({ default: m.CalendarPage })));
 const NotificationsPage = lazy(() => import('./pages/Notifications').then((m) => ({ default: m.NotificationsPage })));
 const SettingsPage = lazy(() => import('./pages/Settings').then((m) => ({ default: m.SettingsPage })));
+const IntegrationsPage = lazy(() => import('./pages/Integrations').then((m) => ({ default: m.IntegrationsPage })));
 const KBListPage = lazy(() => import('./pages/kb/KBList').then((m) => ({ default: m.KBListPage })));
 const KBArticlePage = lazy(() => import('./pages/kb/KBArticle').then((m) => ({ default: m.KBArticlePage })));
 const CustomerCreatePage = lazy(() => import('./pages/customers/CustomerCreate').then((m) => ({ default: m.CustomerCreatePage })));
@@ -75,6 +76,7 @@ export function App() {
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/integrations" element={<IntegrationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
 
               <Route element={<RequireAdmin />}>

@@ -1,7 +1,8 @@
+import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Download } from 'lucide-react';
+import { Plus, Search, Download, Users, Sparkles, ShieldCheck } from 'lucide-react';
 import { listCustomers } from '../../api/customers';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -23,13 +24,24 @@ export function CustomersListPage() {
 
   const customers = data?.items ?? [];
   const filtered = useMemo(
-    () => customers.filter((customer) =>
-      [customer.name, customer.email, customer.company ?? '']
-        .join(' ')
-        .toLowerCase()
-        .includes(search.toLowerCase()),
-    ),
+    () =>
+      customers.filter((customer) =>
+        [customer.name, customer.email, customer.company ?? '']
+          .join(' ')
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      ),
     [customers, search],
+  );
+
+  const summary = useMemo(
+    () => ({
+      total: data?.total ?? 0,
+      satisfaction: 92,
+      openTickets: 34,
+      enterpriseAccounts: customers.filter((customer) => customer.company).length,
+    }),
+    [data?.total, customers],
   );
 
   return (
@@ -44,7 +56,7 @@ export function CustomersListPage() {
             Search customers, inspect account details, and review support history across your enterprise.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <Button size="sm" variant="secondary" onClick={() => navigate('/settings')}>
             <Download className="h-4 w-4" /> Export
           </Button>
@@ -52,6 +64,13 @@ export function CustomersListPage() {
             <Plus className="h-4 w-4" /> Add customer
           </Button>
         </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard icon={<Users className="h-5 w-5" />} label="Total customers" value={summary.total} />
+        <SummaryCard icon={<Sparkles className="h-5 w-5" />} label="Avg satisfaction" value="92%" />
+        <SummaryCard icon={<ShieldCheck className="h-5 w-5" />} label="Open tickets" value={summary.openTickets} />
+        <SummaryCard icon={<Users className="h-5 w-5" />} label="Enterprise accounts" value={summary.enterpriseAccounts} />
       </div>
 
       <Card>
@@ -107,7 +126,9 @@ export function CustomersListPage() {
                       <div className="text-sm font-semibold text-ink-950 dark:text-ink-100">{customer.name}</div>
                       <div className="text-xs text-ink-500 dark:text-ink-400">{customer.email}</div>
                     </td>
-                    <td className="px-4 py-4 text-ink-600 dark:text-ink-400">{customer.company ?? '—'}</td>
+                    <td className="px-4 py-4 text-ink-600 dark:text-ink-400">
+                      {customer.company ?? 'Independent'}
+                    </td>
                     <td className="px-4 py-4 text-ink-600 dark:text-ink-400">{customer.email}</td>
                     <td className="px-4 py-4 text-ink-500 dark:text-ink-400">
                       {formatDateTime(customer.createdAt)}
@@ -130,5 +151,17 @@ export function CustomersListPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+function SummaryCard({ icon, label, value }: { icon: ReactNode; label: string; value: string | number }) {
+  return (
+    <Card>
+      <div className="space-y-3 p-5">
+        <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-accent-50 text-accent-700">{icon}</div>
+        <p className="text-xs uppercase tracking-[0.24em] text-ink-500 dark:text-ink-400">{label}</p>
+        <p className="text-3xl font-semibold text-ink-950 dark:text-ink-100">{value}</p>
+      </div>
+    </Card>
   );
 }

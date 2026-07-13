@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import { prisma } from './lib/prisma';
 import { corsOrigins, isProduction } from './config/env';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
@@ -41,12 +42,22 @@ export function createApp() {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', time: new Date().toISOString() });
   });
-  app.get("/", (req, res) => {
-   res.status(200).json({
-    success: true,
-    message: "Support Copilot Backend is running 🚀",
-    version: "1.0.0"
-   });
+  app.get('/ready', async (_req, res) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      res.json({ status: 'ready', database: 'connected', time: new Date().toISOString() });
+    } catch {
+      res.status(503).json({ status: 'degraded', database: 'unavailable', time: new Date().toISOString() });
+    }
+  });
+  app.get('/', (_req, res) => {
+    res.status(200).json({
+      success: true,
+      message: 'SupportCopilot API is running',
+      version: '1.0.0',
+      health: '/health',
+      readiness: '/ready',
+    });
   });
 
   app.use('/api/auth', authRoutes);

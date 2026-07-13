@@ -22,7 +22,7 @@ export function CustomersListPage() {
     queryFn: () => listCustomers({ search: search || undefined, page }),
   });
 
-  const customers = data?.items ?? [];
+  const customers = useMemo(() => data?.items ?? [], [data?.items]);
   const filtered = useMemo(
     () =>
       customers.filter((customer) =>

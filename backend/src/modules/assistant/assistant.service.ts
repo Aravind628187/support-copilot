@@ -1,4 +1,4 @@
-import { generateAssistantReply, AiNotConfiguredError } from '../../lib/gemini';
+import { generateAssistantReply } from '../../lib/gemini';
 import { recordAudit } from '../audit/audit.service';
 
 export async function chat(messages: { role: 'system' | 'user' | 'assistant'; content: string }[], actorId: string | null) {

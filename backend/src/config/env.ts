@@ -79,6 +79,11 @@ if (!parsed.success) {
 
 export const env = parsed.data;
 
+// Prisma resolves its connection string directly from process.env. Mirror the
+// normalized alias here so deployments using POSTGRES_URL (or a provider
+// specific alias) work after the validation step as documented above.
+process.env.DATABASE_URL = env.DATABASE_URL;
+
 export const isProduction = env.NODE_ENV === 'production';
 
 export const corsOrigins = env.CORS_ORIGIN.split(',').map((origin) =>

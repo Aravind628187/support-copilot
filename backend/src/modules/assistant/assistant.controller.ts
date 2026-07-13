@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { asyncHandler } from '../../utils/asyncHandler';
 import * as service from './assistant.service';
 import { chatRequestSchema } from './assistant.schema';
 import { ApiError } from '../../utils/apiError';

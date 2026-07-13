@@ -5,6 +5,7 @@ import { Textarea } from '../../components/ui/Textarea';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
 import { Copy, RefreshCcw } from 'lucide-react';
+import { api, extractErrorMessage } from '../../api/client';
 
 type Message = { id: string; role: 'user' | 'assistant' | 'system'; content: string };
 
@@ -19,37 +20,28 @@ export function AssistantChatPage() {
   async function sendPrompt(regenerate = false) {
     if (!input && !regenerate) return;
 
-    const userMessage: Message = regenerate
-      ? messages.find((m) => m.id === lastAssistantId)?.role === 'assistant'
-        ? { id: crypto.randomUUID(), role: 'user', content: input }
-        : { id: crypto.randomUUID(), role: 'user', content: input }
-      : { id: crypto.randomUUID(), role: 'user', content: input };
+    const requestMessages = regenerate
+      ? messages.filter((message) => message.id !== lastAssistantId)
+      : [...messages, { id: crypto.randomUUID(), role: 'user' as const, content: input }];
 
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    if (!requestMessages.length) return;
+
+    if (!regenerate) setMessages(requestMessages);
     setIsLoading(true);
 
     try {
-      const resp = await fetch('/api/assistant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ messages: newMessages.map((m) => ({ role: m.role, content: m.content })) }),
+      const { data } = await api.post<{ reply: string }>('/assistant', {
+        messages: requestMessages.map(({ role, content }) => ({ role, content })),
       });
 
-      if (!resp.ok) {
-        const body = await resp.json().catch(() => ({}));
-        throw new Error(body?.error?.message ?? 'AI request failed');
-      }
-
-      const data = await resp.json();
+      if (!data.reply.trim()) throw new Error('The AI returned an empty response. Please try again.');
       const assistant: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.reply };
-      setMessages((prev) => [...prev, assistant]);
+      setMessages([...requestMessages, assistant]);
       setLastAssistantId(assistant.id);
       setInput('');
       inputRef.current?.focus();
     } catch (err) {
-      showToast({ message: (err as Error).message || 'AI request failed', variant: 'error', });
+      showToast({ message: extractErrorMessage(err, (err as Error).message || 'AI request failed'), variant: 'error' });
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { ApiError } from '../utils/apiError';
 import { logger } from '../lib/logger';
 import { isProduction } from '../config/env';
+import { AiNotConfiguredError } from '../lib/gemini';
 
 export function notFoundHandler(req: Request, res: Response) {
   res.status(404).json({
@@ -18,6 +19,12 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
     }
     return res.status(err.status).json({
       error: { code: err.code, message: err.message, details: err.details },
+    });
+  }
+
+  if (err instanceof AiNotConfiguredError) {
+    return res.status(503).json({
+      error: { code: 'AI_UNAVAILABLE', message: err.message },
     });
   }
 

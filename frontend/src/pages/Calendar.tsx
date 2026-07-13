@@ -1,11 +1,42 @@
+import { useEffect, useState } from 'react';
 import { CalendarCheck, Clock3 } from 'lucide-react';
 import { Seo } from '../components/Seo';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { useNavigate } from 'react-router-dom';
+import { CreateCalendarEventModal, type CalendarEventInput } from '../components/calendar/CreateCalendarEventModal';
+import { useToast } from '../components/ui/Toast';
+
+interface CalendarEvent extends CalendarEventInput {
+  id: string;
+}
+
+const calendarEventsStorageKey = 'support-copilot.calendar-events';
+
+function loadEvents(): CalendarEvent[] {
+  try {
+    const stored = localStorage.getItem(calendarEventsStorageKey);
+    return stored ? JSON.parse(stored) as CalendarEvent[] : [];
+  } catch {
+    return [];
+  }
+}
 
 export function CalendarPage() {
-  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [createOpen, setCreateOpen] = useState(false);
+  const [events, setEvents] = useState<CalendarEvent[]>(loadEvents);
+
+  useEffect(() => {
+    localStorage.setItem(calendarEventsStorageKey, JSON.stringify(events));
+  }, [events]);
+
+  function createEvent(input: CalendarEventInput) {
+    setEvents((current) => [...current, { ...input, id: crypto.randomUUID() }].sort((a, b) =>
+      `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`),
+    ));
+    showToast({ variant: 'success', message: 'Calendar event created' });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <Seo title="Calendar" description="Manage your support schedule and agent availability." />
@@ -19,7 +50,7 @@ export function CalendarPage() {
               Plan agent shifts, SLA reminders, and customer follow-ups from one centralized calendar.
             </p>
           </div>
-          <Button size="sm" variant="secondary" onClick={() => navigate('/tickets?new=1')}>Create event</Button>
+          <Button size="sm" variant="secondary" onClick={() => setCreateOpen(true)}>Create event</Button>
         </div>
       </div>
 
@@ -32,9 +63,19 @@ export function CalendarPage() {
             </div>
           </CardHeader>
           <CardBody className="space-y-3">
-            <p className="text-sm text-ink-500 dark:text-ink-400">
-              Key support checkpoints and follow-up sessions for the next week.
-            </p>
+            {events.length > 0 ? (
+              <ul className="space-y-3">
+                {events.map((event) => (
+                  <li key={event.id} className="rounded-xl border border-ink-100 p-3 dark:border-ink-800">
+                    <p className="font-medium text-ink-900 dark:text-ink-100">{event.title}</p>
+                    <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">{event.date} at {event.time}</p>
+                    {event.description && <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">{event.description}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-ink-500 dark:text-ink-400">Create an event to track follow-ups, shifts, and support checkpoints.</p>
+            )}
           </CardBody>
         </Card>
 
@@ -52,6 +93,8 @@ export function CalendarPage() {
           </CardBody>
         </Card>
       </div>
+
+      <CreateCalendarEventModal isOpen={createOpen} onClose={() => setCreateOpen(false)} onCreate={createEvent} />
     </div>
   );
 }

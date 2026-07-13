@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
-import { Footer } from './Footer';
 
 const primaryNavItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -164,7 +163,6 @@ export function Sidebar() {
           <span>Profile</span>
         </NavLink>
 
-        <Footer compact />
       </div>
     </nav>
   );

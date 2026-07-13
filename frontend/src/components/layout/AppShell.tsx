@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { MobileNav } from './MobileNav';
+import { Footer } from './Footer';
 import { CommandPalette } from '../ui/CommandPalette';
 import { useDarkMode } from '../../hooks/useDarkMode';
 
@@ -22,8 +23,9 @@ export function AppShell() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-ink-50 text-ink-950 dark:bg-ink-950 dark:text-ink-100">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-ink-50 text-ink-950 dark:bg-ink-950 dark:text-ink-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.16),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.16),_transparent_22%)]" />
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
       <Sidebar />
       <div className="relative flex flex-1 flex-col overflow-hidden">
         <Topbar onOpenPalette={() => setPaletteOpen(true)} theme={theme} onToggleTheme={toggle} />
@@ -40,6 +42,8 @@ export function AppShell() {
           </div>
         </main>
       </div>
+      </div>
+      <Footer />
       <MobileNav />
       <CommandPalette
         isOpen={paletteOpen}
